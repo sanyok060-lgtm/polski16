@@ -1,0 +1,8 @@
+{
+  "appId": "com.alex.polski16",
+  "appName": "Polski 16",
+  "webDir": "docs",
+  "server": {
+    "androidScheme": "https"
+  }
+}

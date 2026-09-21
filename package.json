@@ -1,0 +1,16 @@
+{
+  "name": "polski16-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Polski 16 — офлайн-тренажёр польских слов (PWA + Android APK)",
+  "scripts": {
+    "sync": "cap sync"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.2",
+    "@capacitor/core": "8.5.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.2"
+  }
+}

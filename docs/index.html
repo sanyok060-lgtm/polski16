@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Polski 16 — тренажёр польского по методу «Полиглот»</title>
+<style>
+/* Польские слова внутри русского текста автоматически набираются серифом:
+   шрифт "PLMix" подключает локальные серифы только для латиницы (unicode-range). */
+@font-face{font-family:"PLMix";src:local("Iowan Old Style"),local("IowanOldStyle-Roman"),local("Palatino"),local("Palatino Linotype"),local("Book Antiqua"),local("Georgia"),local("Noto Serif"),local("NotoSerif"),local("Droid Serif"),local("Liberation Serif"),local("DejaVu Serif"),local("Times New Roman");unicode-range:U+0041-005A,U+0061-007A,U+00C0-00FF,U+0100-017F;}
+:root{
+  --bg:#f2f3f5; --surface:#ffffff; --surface2:#e6e8ec; --text:#17181c; --muted:#646972; --border:#d5d8de;
+  --accent:#3247b8; --accent-text:#ffffff; --accent-soft:rgba(50,71,184,.10);
+  --green:#25904f; --green-soft:rgba(37,144,79,.13); --yellow:#c98d00; --yellow-soft:rgba(201,141,0,.16); --red:#cf3d33; --red-soft:rgba(207,61,51,.12);
+  --ui:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --pl:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Noto Serif","Liberation Serif","Times New Roman",serif;
+  --mix:"PLMix",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#131418; --surface:#1d1f25; --surface2:#292c34; --text:#e9eaee; --muted:#9a9fab; --border:#3a3e48;
+    --accent:#8d9dff; --accent-text:#0f1330; --accent-soft:rgba(141,157,255,.14);
+    --green:#4fc57c; --green-soft:rgba(79,197,124,.16); --yellow:#e5b53a; --yellow-soft:rgba(229,181,58,.18); --red:#f0685c; --red-soft:rgba(240,104,92,.16);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131418; --surface:#1d1f25; --surface2:#292c34; --text:#e9eaee; --muted:#9a9fab; --border:#3a3e48;
+  --accent:#8d9dff; --accent-text:#0f1330; --accent-soft:rgba(141,157,255,.14);
+  --green:#4fc57c; --green-soft:rgba(79,197,124,.16); --yellow:#e5b53a; --yellow-soft:rgba(229,181,58,.18); --red:#f0685c; --red-soft:rgba(240,104,92,.16);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--ui);font-size:16px;line-height:1.45;min-height:100vh;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pl{font-family:var(--pl)}
+#app{max-width:620px;margin:0 auto;padding:0 14px 48px}
+
+/* шапка */
+.top{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0 8px}
+.brand{font-family:var(--pl);font-size:22px;line-height:1.1}
+.brand small{display:block;font-family:var(--ui);font-size:12px;color:var(--muted);margin-top:2px}
+.topbtns{display:flex;gap:6px}
+.topbtns button{height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);font-size:14px}
+.topbtns button.icon{width:40px;padding:0;font-size:18px}
+
+/* уроки и вкладки */
+.lessons{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
+.lessons::-webkit-scrollbar{display:none}
+.lessons button{flex:0 0 auto;min-width:42px;height:38px;padding:0 10px;border-radius:10px;border:1px solid var(--border);background:var(--surface);font-weight:500}
+.lessons button.active{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
+.lessonTitle{margin:2px 0 12px;font-size:15px;color:var(--muted);line-height:1.35}
+.lessonTitle b{display:block;color:var(--text);font-weight:600;font-size:17px}
+.lessonTitle span{font-family:var(--mix)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--surface2);padding:4px;border-radius:12px;margin-bottom:16px}
+.tabs button{height:38px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-weight:500}
+.tabs button.active{background:var(--surface);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+
+/* счётчики и полоса */
+.score{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;margin:0 0 10px}
+.grade{font-size:36px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.grade small{font-size:12px;color:var(--muted);font-weight:400;margin-left:5px}
+.sc{font-size:14px;color:var(--muted);white-space:nowrap}
+.sc b{font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.sc.ok b{color:var(--green)} .sc.bad b{color:var(--red)}
+.bar{display:flex;gap:3px;height:8px;margin:0 0 18px}
+.bar i{display:block;flex:1;height:8px;min-width:0;margin:0;padding:0;border:0;border-radius:3px;background:var(--border);transition:background .2s}
+.bar i.g{background:var(--green)} .bar i.y{background:var(--yellow)} .bar i.r{background:var(--red)}
+.bar i.r.done{background:repeating-linear-gradient(-45deg,var(--red) 0 4px,var(--green) 4px 8px)}
+.bar i.cur{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--accent)}
+
+/* фраза */
+.prompt{padding:2px 0 16px}
+.ru{font-size:23px;line-height:1.35;font-weight:500}
+.ru .tag{color:var(--muted);font-weight:400;font-size:.8em}
+.prompt .hint{font-size:13px;color:var(--muted);margin-top:4px}
+.inputrow{display:flex;gap:6px;margin-bottom:8px}
+.inputrow input{flex:1;min-width:0;height:52px;padding:0 12px;border:1.5px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);font-family:var(--pl);font-size:21px}
+.inputrow input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.inputrow input[readonly]{background:var(--surface2);color:var(--muted)}
+.inputrow button{width:48px;height:52px;border-radius:12px;border:1px solid var(--border);background:var(--surface);font-size:18px;flex:0 0 auto}
+.dia{display:flex;gap:5px;margin-bottom:12px}
+.dia button{flex:1;min-width:0;height:42px;padding:0;border-radius:9px;border:1px solid var(--border);background:var(--surface);font-family:var(--pl);font-size:20px}
+.grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+.grid button{padding:0 14px;height:44px;border-radius:11px;border:1px solid var(--border);background:var(--surface);font-family:var(--pl);font-size:20px;line-height:1}
+.grid button.used{opacity:.35}
+button:disabled{cursor:default}
+button.primary{width:100%;height:52px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-text);font-size:17px;font-weight:600}
+button.secondary{width:100%;height:46px;border-radius:12px;border:1px solid var(--border);background:var(--surface);font-size:16px}
+.actions{display:grid;gap:8px}
+
+/* результат */
+.fb{margin-top:16px;padding:14px 14px 14px 16px;border-radius:14px;border-left:5px solid var(--border);background:var(--surface)}
+.fb.g{border-color:var(--green)} .fb.y{border-color:var(--yellow)} .fb.r{border-color:var(--red)}
+.fbhead{font-weight:600;margin-bottom:8px}
+.fb.g .fbhead{color:var(--green)} .fb.y .fbhead{color:var(--yellow)} .fb.r .fbhead{color:var(--red)}
+.ref{display:flex;align-items:center;gap:10px;font-family:var(--pl);font-size:23px;line-height:1.3;margin-bottom:6px}
+.ref mark{background:var(--yellow-soft);color:inherit;box-shadow:inset 0 -2px 0 var(--yellow);border-radius:2px}
+.ref2{font-size:14px;color:var(--muted);margin-bottom:6px}
+.ref2 span{font-family:var(--pl);font-size:17px;color:var(--text)}
+.tr{font-size:15px;color:var(--muted);margin:-2px 0 8px;letter-spacing:.01em}
+.tr.wtr{margin:-4px 0 14px}
+.ynote{font-size:14px;color:var(--yellow);margin-bottom:8px}
+.note{font-family:var(--mix);font-size:15px;color:var(--muted);line-height:1.5;margin-bottom:14px}
+.spk{width:38px;height:38px;flex:0 0 auto;border-radius:10px;border:1px solid var(--border);background:var(--surface);font-size:17px;padding:0}
+
+/* завершение */
+.finish{margin-top:6px;padding:18px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--border)}
+.finish h3{margin:0 0 6px;font-size:20px}
+.finish p{margin:0 0 14px;color:var(--muted)}
+.finish p b{color:var(--text)}
+
+/* слова */
+.wprog{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin-bottom:10px}
+.wcard{padding:6px 0 18px}
+.wru{font-size:26px;font-weight:500;line-height:1.3}
+.wru .tag{color:var(--muted);font-weight:400;font-size:.75em}
+.opts{display:grid;gap:8px;margin-bottom:14px}
+.opts button{min-height:50px;padding:8px 14px;text-align:left;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--pl);font-size:20px;line-height:1.25}
+.opts button .k{font-family:var(--ui);font-size:12px;color:var(--muted);margin-right:10px}
+.opts button.ok{border-color:var(--green);background:var(--green-soft)}
+.opts button.bad{border-color:var(--red);background:var(--red-soft)}
+.opts button:disabled{opacity:1}
+.wfb{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-weight:600}
+.wfb.ok{color:var(--green)} .wfb.bad{color:var(--red)}
+
+/* правило и таблицы */
+.rule{font-family:var(--mix);font-size:16px;line-height:1.55}
+.rule p,.overlay p{margin:0 0 12px}
+.rule ul,.overlay ul{padding-left:20px;margin:0 0 12px}
+.rule li,.overlay li{margin-bottom:6px}
+.rule table,.overlay table{border-collapse:collapse;width:100%;margin:6px 0 16px;font-size:15px}
+.rule td,.rule th,.overlay td,.overlay th{border:1px solid var(--border);padding:6px 8px;text-align:left;vertical-align:top}
+.rule th,.overlay th{background:var(--surface2);font-weight:600;font-family:var(--mix)}
+.rule .conv{font-size:14px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.rule .secondary{margin-top:8px}
+
+/* оверлей подсказки */
+.overlay{position:fixed;inset:0;z-index:20;background:var(--bg);overflow:auto;padding:12px 14px 40px;font-family:var(--mix);line-height:1.5}
+.overlay[hidden]{display:none}
+.overlay .inner{max-width:620px;margin:0 auto}
+.overlay .bar2{position:sticky;top:0;display:flex;justify-content:flex-end;background:var(--bg);padding:4px 0 8px;z-index:1}
+.overlay .bar2 button{height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface)}
+.overlay h2{font-size:22px;margin:4px 0 12px}
+.overlay h3{font-size:17px;margin:20px 0 8px}
+.overlay h4{font-size:15px;margin:12px 0 6px}
+.overlay .small{font-size:14px;color:var(--muted)}
+.overlay .alt{color:var(--muted);font-size:13px}
+.overlay table.main td{vertical-align:top}
+
+/* тост */
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);max-width:92vw;padding:10px 14px;border-radius:12px;background:var(--text);color:var(--bg);font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}
+#toast.show{opacity:1}
+
+@media (min-width:600px){
+  .ru{font-size:25px}
+  .grid button{height:42px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important}
+}
+
+/* ===== v2: чипы, скрытая сетка, разбор, итог ===== */
+.lessons .sep{flex:0 0 1px;background:var(--border);margin:6px 4px}
+.lessons button.sit{padding:0 10px;font-size:14px}
+.lessons button.spec{font-size:14px;color:var(--muted)}
+.lessons button.spec b{color:var(--red);font-weight:600;margin-left:2px}
+.lessons button.spec.active{color:var(--accent-text)} .lessons button.spec.active b{color:var(--accent-text)}
+.tabs[hidden]{display:none}
+.gridwrap{margin-bottom:16px}
+.gridwrap .grid{margin-bottom:0}
+button.ghost{width:100%;height:42px;border-radius:11px;border:1px dashed var(--border);background:transparent;color:var(--muted);font-size:15px}
+button.ghost:disabled{opacity:.5}
+.origin{font-size:13px;color:var(--muted);margin-bottom:4px}
+.diff{margin:4px 0 10px;padding:10px 12px;border-radius:10px;background:var(--surface2)}
+.difflabel{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.diff .pl{font-size:19px;line-height:1.4}
+.diff s{color:var(--red);text-decoration:line-through;opacity:.8}
+.diff b{color:var(--green);font-weight:600}
+.diffhint{font-size:14px;color:var(--text);margin-top:6px}
+.actions.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 6px}
+.actions.row button{font-size:15px}
+button.primary:disabled{opacity:.45}
+.sum h3{font-size:16px;margin:22px 0 8px}
+.sumtop{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;padding:14px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--border)}
+.sumtop .big{display:flex;flex-direction:column}
+.sumtop .big .grade{font-size:44px}
+.sumtop .big small{font-size:12px;color:var(--muted)}
+.sumfacts{font-size:14px;color:var(--muted);line-height:1.6}
+.sumfacts b{color:var(--text)}
+.muted{color:var(--muted)} .small{font-size:13px}
+.tags{display:grid;gap:8px}
+.tagrow{display:grid;grid-template-columns:1fr 90px 44px;align-items:center;gap:10px;font-size:14px}
+.tagname{font-family:var(--mix)}
+.tagbar{height:8px;border-radius:4px;background:var(--surface2);overflow:hidden}
+.tagbar i{display:block;height:100%;border-radius:4px}
+.tagbar i.g{background:var(--green)} .tagbar i.y{background:var(--yellow)} .tagbar i.r{background:var(--red)}
+.tagpct{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.lessonlist{display:grid;gap:6px}
+.lrow{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;padding:10px 12px;border-radius:11px;border:1px solid var(--border);background:var(--surface);text-align:left;font-size:14px}
+.lrow .lname{font-family:var(--mix);flex:1;min-width:0}
+.lrow .lname em{font-style:normal;color:var(--green);font-size:12px;margin-left:4px}
+.lrow .lstat{display:flex;flex-direction:column;align-items:flex-end;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.lrow .lstat span{font-weight:600} .lrow .lstat span.g{color:var(--green)} .lrow .lstat span.y{color:var(--yellow)}
+.lrow .lstat small{font-size:11px;color:var(--muted)}
+.settings{display:grid;gap:12px;font-size:14px}
+.settings label{display:flex;gap:10px;align-items:flex-start;line-height:1.4}
+.settings input{margin-top:3px;width:18px;height:18px;flex:0 0 auto}
+button.danger{color:var(--red);border-color:var(--red)}
+@media (max-width:380px){.tagrow{grid-template-columns:1fr 70px 40px}}
+
+</style>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#3247b8">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Polski 16">
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function (err) {
+      console.warn('SW registration failed:', err);
+    });
+  });
+}
+</script>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <div class="brand">Polski 16<small>тренажёр по методу «Полиглот»</small></div>
+    <div class="topbtns">
+      <button type="button" id="btnSummary">Итог</button>
+      <button type="button" id="btnRef">Подсказка</button>
+      <button type="button" id="btnTheme" class="icon" aria-label="Переключить тему">◐</button>
+    </div>
+  </header>
+  <nav class="lessons" id="lessonBar" aria-label="Уроки"></nav>
+  <div class="lessonTitle" id="lessonTitle"></div>
+  <nav class="tabs" aria-label="Режим">
+    <button type="button" data-mode="phrases">Фразы</button>
+    <button type="button" data-mode="words">Слова</button>
+    <button type="button" data-mode="rule">Правило</button>
+  </nav>
+  <main id="panel"></main>
+</div>
+<div id="refOverlay" class="overlay" hidden role="dialog" aria-label="Опорные таблицы">
+  <div class="inner"><div class="bar2"><button type="button" id="btnRefClose">Закрыть</button></div></div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+var LESSONS=[];
+/* ===== Темы (теги) для аналитики слабых мест ===== */
+var TAGS={
+ 'conj-am':'Спряжение -am / -asz','conj-isz':'Спряжение -ę / -isz','conj-esz':'Спряжение -ę / -esz','byc':'Глагол być',
+ 'nie-gen':'Отрицание nie и родительный','gen':'Родительный после глаголов и предлогов','czy':'Вопрос с czy','qword':'Вопросительные слова',
+ 'past':'Прошедшее время и род','past-pl':'Прошедшее: множественное число','future':'Будущее с będę','perf':'Совершенный вид как будущее',
+ 'acc':'Винительный падеж','pron':'Личные местоимения (go, ją, mnie…)','modal':'Модальные глаголы','instr':'Творительный падеж','loc':'Предложный падеж',
+ 'poss':'Притяжательные','pan':'Вежливые Pan / Pani / Państwo','adj':'Согласование прилагательных','dat':'Дательный падеж',
+ 'num':'Числительные и счёт','money':'Цены и деньги','time':'Время и даты','cond':'Условное наклонение','request':'Просьбы и вежливые формулы',
+ 'order':'Порядок слов и частицы','vocab':'Устойчивые обороты и лексика'
+};
+/* Теги фраз уроков 1–12 (по порядку предложений в уроке) */
+var SENT_TAGS={
+ 1:[['conj-am','loc'],['conj-am'],['conj-am','acc'],['conj-am','acc'],['conj-am','pron'],['conj-am','instr'],['conj-am','gen'],['conj-am','gen'],['byc','loc'],['byc','loc'],['pan','conj-am']],
+ 2:[['conj-isz'],['conj-isz','qword'],['conj-isz','gen'],['conj-isz','acc'],['conj-isz'],['conj-isz','acc'],['conj-isz','acc'],['conj-isz','gen'],['conj-isz','pan'],['conj-isz','time'],['conj-isz']],
+ 3:[['conj-esz','loc'],['conj-esz','acc'],['conj-esz','gen'],['conj-esz','gen'],['conj-esz','acc'],['conj-esz'],['conj-esz','acc'],['conj-esz','acc'],['conj-esz','pan'],['conj-esz','order'],['conj-esz','qword']],
+ 4:[['nie-gen'],['nie-gen'],['nie-gen'],['nie-gen'],['nie-gen'],['nie-gen'],['nie-gen'],['nie-gen'],['nie-gen'],['nie-gen','acc'],['nie-gen'],['nie-gen','pan']],
+ 5:[['czy'],['czy'],['qword'],['qword'],['qword','byc'],['qword'],['qword','nie-gen'],['qword','money'],['qword','pan'],['qword','byc'],['qword','time'],['qword']],
+ 6:[['past','loc'],['past','loc'],['past','czy'],['past','acc'],['past-pl'],['past-pl'],['past'],['past','loc'],['past','pan'],['past-pl','nie-gen'],['past','acc'],['past']],
+ 7:[['future'],['future','byc'],['future','time'],['future','loc'],['future','nie-gen'],['future','pan'],['future'],['future','time'],['future','time'],['future','money'],['future']],
+ 8:[['perf'],['perf'],['perf','acc'],['perf','acc'],['perf','acc'],['perf','pan','instr'],['perf','qword'],['perf','time'],['perf','dat','time'],['perf','acc'],['perf','gen'],['perf']],
+ 9:[['acc','adj'],['acc','adj'],['acc','adj'],['acc','adj'],['acc','pan'],['acc','adj'],['acc','pron'],['acc','pron'],['acc','pron'],['pron','nie-gen'],['acc','adj','pan'],['acc']],
+ 10:[['modal'],['modal','czy'],['modal'],['modal','czy'],['modal'],['modal','pan'],['modal','gen'],['modal','nie-gen'],['modal'],['gen'],['modal','pan','request'],['modal']],
+ 11:[['instr','byc'],['instr','gen'],['instr'],['instr'],['instr','loc'],['loc'],['instr'],['loc'],['loc'],['gen','adj'],['loc'],['instr']],
+ 12:[['poss'],['poss','qword'],['poss','loc'],['poss'],['poss','pan'],['pan','dat'],['pan','dat'],['pan','past-pl'],['pan','poss'],['pan'],['pan','poss','adj'],['poss','adj']]
+};
+
+/* ===== Уроки 1–3: три группы спряжения в настоящем времени ===== */
+LESSONS.push({
+n:1, title:"Настоящее время: группа -am / -asz", sub:"czytam, czytasz, czyta… и глагол być",
+rule:`<p>Польский глагол спрягается окончаниями, поэтому личное местоимение обычно опускается: <b>czytam</b> — уже «я читаю». Местоимение ставят только для противопоставления: <i>Ja czytam, a ty piszesz.</i></p>
+<table><tr><th></th><th>czytać</th><th>mieć</th><th>być</th></tr>
+<tr><th>ja</th><td>czytam</td><td>mam</td><td>jestem</td></tr>
+<tr><th>ty</th><td>czytasz</td><td>masz</td><td>jesteś</td></tr>
+<tr><th>on / ona / ono<br>Pan / Pani</th><td>czyta</td><td>ma</td><td>jest</td></tr>
+<tr><th>my</th><td>czytamy</td><td>mamy</td><td>jesteśmy</td></tr>
+<tr><th>wy</th><td>czytacie</td><td>macie</td><td>jesteście</td></tr>
+<tr><th>oni / one<br>Państwo</th><td>czytają</td><td>mają</td><td>są</td></tr></table>
+<ul>
+<li>Группа -am/-asz — самая простая: основа инфинитива без -ć плюс окончание. Так спрягаются czytać, mieszkać, znać, pamiętać, czekać, słuchać, szukać, rozmawiać, kochać, а также mieć (mam, masz, ma…).</li>
+<li>«У меня есть» = <b>mam</b>. Конструкции «u mnie jest» в польском нет.</li>
+<li>Связка być не опускается: <i>Jestem w biurze. Klient jest w domu.</i></li>
+<li>oni — «они», если в группе есть хотя бы один мужчина; one — только женщины, дети или предметы.</li>
+<li>Уже в этом уроке встречаются падежи, которые разбираются позже: umowę (винительный, урок 9), muzyki / pracy (родительный после słuchać, szukać — урок 4), w Warszawie, z klientem (урок 11). Пока просто запоминайте форму целиком.</li>
+<li>Вежливое «вы»: <b>Pan</b> (к мужчине) / <b>Pani</b> (к женщине) + глагол в 3-м лице ед. ч.: <i>Pani ma, Pan czyta.</i> Подробно — урок 12.</li>
+</ul>
+<p class="conv">Обозначения в заданиях: «Вы (мн.)» — несколько человек на ты (wy); «(Pan) / (Pani) / (Państwo)» — вежливое обращение; «(м.) / (ж.)» — род говорящего или собеседника.</p>`,
+words:[["быть","być"],["иметь","mieć"],["знать","znać"],["читать","czytać"],["жить (проживать)","mieszkać"],["помнить","pamiętać"],["ждать","czekać"],["слушать","słuchać"],["искать","szukać"],["разговаривать","rozmawiać"],["время","czas"],["работа","praca"],["клиент","klient"],["договор","umowa"],["дом","dom"],["офис","biuro"],["музыка","muzyka"],["он / она","on / ona"]],
+s:[
+{ru:"Я живу в Варшаве.",pl:"Mieszkam w Warszawie.",acc:["[Ja] mieszkam w Warszawie"],d:["mieszkasz","mieszka","Warszawa"],note:"mieszkać: mieszkam, mieszkasz, mieszka, mieszkamy, mieszkacie, mieszkają. Местоимение ja опускается — окончание -m уже значит «я». Warszawa → w Warszawie (предложный падеж, урок 11)."},
+{ru:"У меня есть время.",pl:"Mam czas.",acc:["[Ja] mam czas"],d:["masz","ma","czasu"],note:"«У меня есть» = просто mam (mieć: mam, masz, ma, mamy, macie, mają). czas — мужской неодушевлённый: винительный совпадает с именительным. Форма czasu — родительный, она нужна после nie (урок 4)."},
+{ru:"Мы ждём клиента.",pl:"Czekamy na klienta.",acc:["[My] czekamy na klienta"],d:["czekam","czekają","klient"],note:"czekać na + винительный падеж. klient — одушевлённый, поэтому в винительном -a: klienta. Окончание -amy — «мы»."},
+{ru:"Он читает договор.",pl:"Czyta umowę.",acc:["[On] czyta umowę"],d:["czytam","czytają","umowa"],note:"czyta — 3-е лицо ед. ч. (он / она / оно, а также Pan / Pani), без окончания. umowa → umowę: женский род в винительном -a → -ę (урок 9)."},
+{ru:"Она помнит его.",pl:"Pamięta go.",acc:["{Pamięta go|Ona go pamięta|Ona pamięta go}"],d:["pamiętam","pamiętają","jego"],note:"«Его» = go — краткая безударная форма; она не стоит в начале предложения: Pamięta go / Ona go pamięta. Полная форма jego — только под ударением или в начале фразы."},
+{ru:"Мы разговариваем с клиентом.",pl:"Rozmawiamy z klientem.",acc:["[My] rozmawiamy z klientem"],d:["rozmawiam","rozmawiają","klient"],note:"rozmawiać z + творительный падеж: klient → z klientem (урок 11). rozmawiamy — «мы»."},
+{ru:"Они слушают музыку.",pl:"Słuchają muzyki.",acc:["[{Oni|One}] słuchają muzyki"],d:["słucha","słuchamy","muzykę"],note:"słuchać требует родительного падежа: muzyka → muzyki (не muzykę!). Окончание -ają — «они»."},
+{ru:"Вы (мн.) ищете работу?",pl:"Szukacie pracy?",acc:["[Czy] [wy] szukacie pracy"],d:["szukam","szukają","pracę"],note:"szukać тоже требует родительного: praca → pracy. -acie — «вы» (несколько человек на ты). Вопрос задают интонацией или частицей czy (урок 5)."},
+{ru:"Я в офисе.",pl:"Jestem w biurze.",acc:["[Ja] jestem w biurze"],d:["jest","jesteś","biuro"],note:"być — единственный по-настоящему неправильный глагол: jestem, jesteś, jest, jesteśmy, jesteście, są. Связка не опускается: «Я в офисе» = Jestem w biurze. biuro → w biurze (предложный, урок 11)."},
+{ru:"Клиент дома.",pl:"Klient jest w domu.",acc:["Klient jest w domu"],d:["jestem","są","dom"],note:"«Дома» = w domu. Связку jest выбросить нельзя: Klient jest w domu — без неё фраза не польская."},
+{ru:"У вас (Pani) есть время?",pl:"Ma Pani czas?",acc:["[Czy] {ma Pani|Pani ma} czas"],d:["masz","mam","Pan"],note:"Вежливое обращение: Pani (к женщине) / Pan (к мужчине) + глагол в 3-м лице ед. ч.: Pani ma. Не masz — так говорят только на ты. В вопросе глагол чаще ставят перед Pani: Ma Pani czas? Подробно — урок 12."}
+]});
+
+LESSONS.push({
+n:2, title:"Настоящее время: группа -ę / -isz (-ysz)", sub:"mówię, mówisz, mówi… robić, lubić, płacić, dzwonić",
+rule:`<p>Вторая группа — глаголы на -ić, -yć, -eć: mówić, robić, lubić, płacić, dzwonić, prosić, myśleć, widzieć, słyszeć, uczyć się, kończyć.</p>
+<table><tr><th></th><th>mówić</th><th>robić</th><th>uczyć się</th><th>prosić</th></tr>
+<tr><th>ja</th><td>mówię</td><td>robię</td><td>uczę się</td><td>proszę</td></tr>
+<tr><th>ty</th><td>mówisz</td><td>robisz</td><td>uczysz się</td><td>prosisz</td></tr>
+<tr><th>on / ona / ono<br>Pan / Pani</th><td>mówi</td><td>robi</td><td>uczy się</td><td>prosi</td></tr>
+<tr><th>my</th><td>mówimy</td><td>robimy</td><td>uczymy się</td><td>prosimy</td></tr>
+<tr><th>wy</th><td>mówicie</td><td>robicie</td><td>uczycie się</td><td>prosicie</td></tr>
+<tr><th>oni / one<br>Państwo</th><td>mówią</td><td>robią</td><td>uczą się</td><td>proszą</td></tr></table>
+<ul>
+<li>После твёрдых шипящих cz, sz, ż, rz окончание пишется через -y: uczysz, kończysz, słyszysz, liczysz. В остальных случаях -i: mówisz, robisz, płacisz, dzwonisz.</li>
+<li>Формы «я» и «они» иногда имеют другую основу: prosić → proszę, proszą (но prosisz); musieć → muszę, muszą (урок 10).</li>
+<li>Частица się пишется отдельно и обычно стоит после глагола: uczę się, nazywam się.</li>
+<li>Управление, не совпадающее с русским: dzwonić do kogoś (звонить кому-то), płacić za coś (платить за), prosić o coś (просить о), uczyć się czegoś (учить что-то — родительный), lubić coś (винительный: lubię kawę — «мне нравится кофе»).</li>
+</ul>`,
+words:[["говорить","mówić"],["делать","robić"],["любить, нравиться","lubić"],["платить","płacić"],["звонить","dzwonić"],["просить","prosić"],["думать","myśleć"],["видеть","widzieć"],["учиться","uczyć się"],["заканчивать","kończyć"],["слышать","słyszeć"],["по-польски","po polsku"],["счёт (фактура)","faktura"],["звонок, телефон","telefon"],["встреча","spotkanie"],["срок","termin"],["кофе","kawa"],["сейчас","teraz"],["проблема","problem"]],
+s:[
+{ru:"Я говорю по-польски.",pl:"Mówię po polsku.",acc:["[Ja] mówię po polsku"],d:["mówisz","mówi","polski"],note:"mówić: mówię, mówisz, mówi, mówimy, mówicie, mówią. «По-польски» = po polsku (застывшая форма; не po polski)."},
+{ru:"Что ты сейчас делаешь?",pl:"Co teraz robisz?",acc:["Co [ty] {teraz robisz|robisz teraz}"],d:["robię","robi","robicie"],note:"robić: robię, robisz, robi, robimy, robicie, robią. Вопросительное слово co ставится в начало; частица czy при нём не нужна."},
+{ru:"Он звонит клиенту.",pl:"Dzwoni do klienta.",acc:["[On] dzwoni do klienta"],d:["dzwonię","dzwonią","klientowi"],note:"Нормативная конструкция — dzwonić do + родительный: klient → do klienta. Дательный klientowi здесь не используется."},
+{ru:"Мы платим за кофе.",pl:"Płacimy za kawę.",acc:["[My] płacimy za kawę"],d:["płacę","płacą","kawa"],note:"płacić za + винительный: kawa → za kawę. płacić: płacę, płacisz, płaci, płacimy, płacicie, płacą."},
+{ru:"Они видят проблему.",pl:"Widzą problem.",acc:["[{Oni|One}] widzą problem"],d:["widzi","widzimy","problemu"],note:"widzieć: widzę, widzisz, widzi, widzimy, widzicie, widzą. problem — мужского рода (не женского, как в русском): винительный = именительный."},
+{ru:"Ты любишь кофе?",pl:"Lubisz kawę?",acc:["[Czy] [ty] lubisz kawę"],d:["lubię","lubi","kawy"],note:"lubić + винительный: kawa → kawę. «Мне нравится кофе» по-польски — lubię kawę (буквально «я люблю»), без дательного падежа."},
+{ru:"Я прошу счёт.",pl:"Proszę o fakturę.",acc:["[Ja] proszę o fakturę","Poproszę [o] fakturę"],d:["prosisz","prosi","faktura"],note:"prosić o + винительный: faktura → o fakturę. Чередование s → sz в формах «я» и «они»: proszę, prosisz, prosi, prosimy, prosicie, proszą. В ресторане чаще скажут Poproszę fakturę — тоже принимается."},
+{ru:"Мы учим польский.",pl:"Uczymy się polskiego.",acc:["[My] uczymy się polskiego"],d:["uczę","uczą","polski"],note:"uczyć się + родительный: (język) polski → polskiego. Частица się — отдельное слово, обычно после глагола: uczymy się. uczyć: uczę, uczysz (после cz — -ysz), uczy, uczymy, uczycie, uczą."},
+{ru:"Что вы (Pan) думаете?",pl:"Co Pan myśli?",acc:["Co {Pan myśli|myśli Pan}"],d:["myślisz","myślę","Pani"],note:"Pan + 3-е лицо: Pan myśli (myślisz — только к другу). myśleć: myślę, myślisz, myśli, myślimy, myślicie, myślą."},
+{ru:"Я заканчиваю работу в пять.",pl:"Kończę pracę o piątej.",acc:["[Ja] kończę pracę o piątej"],d:["kończysz","kończy","praca"],note:"kończyć: kończę, kończysz, kończy, kończymy, kończycie, kończą. «В пять (часов)» = o piątej (o + предложный падеж от piąta godzina)."},
+{ru:"Ты слышишь?",pl:"Słyszysz?",acc:["[Czy] [ty] słyszysz"],d:["słyszę","słyszy","słyszą"],note:"słyszeć: słyszę, słyszysz, słyszy, słyszymy, słyszycie, słyszą. Вопрос из одного глагола — обычное дело: Słyszysz? Ответ: Słyszę."}
+]});
+
+LESSONS.push({
+n:3, title:"Настоящее время: группа -ę / -esz", sub:"pracuję, pracujesz… pisać, iść, jechać, chcieć, brać",
+rule:`<p>Третья группа — самая разнообразная: глаголы на -ować (pracować, kupować, planować, dziękować) и глаголы с чередованием в основе (pisać, iść, jechać, chcieć, brać).</p>
+<table><tr><th></th><th>pracować</th><th>pisać</th><th>iść</th><th>jechać</th><th>chcieć</th><th>brać</th></tr>
+<tr><th>ja</th><td>pracuję</td><td>piszę</td><td>idę</td><td>jadę</td><td>chcę</td><td>biorę</td></tr>
+<tr><th>ty</th><td>pracujesz</td><td>piszesz</td><td>idziesz</td><td>jedziesz</td><td>chcesz</td><td>bierzesz</td></tr>
+<tr><th>on / ona / ono<br>Pan / Pani</th><td>pracuje</td><td>pisze</td><td>idzie</td><td>jedzie</td><td>chce</td><td>bierze</td></tr>
+<tr><th>my</th><td>pracujemy</td><td>piszemy</td><td>idziemy</td><td>jedziemy</td><td>chcemy</td><td>bierzemy</td></tr>
+<tr><th>wy</th><td>pracujecie</td><td>piszecie</td><td>idziecie</td><td>jedziecie</td><td>chcecie</td><td>bierzecie</td></tr>
+<tr><th>oni / one<br>Państwo</th><td>pracują</td><td>piszą</td><td>idą</td><td>jadą</td><td>chcą</td><td>biorą</td></tr></table>
+<ul>
+<li>-ować → -uję: это самый продуктивный тип, к нему относятся почти все заимствования: planować, rezerwować, dyskutować, informować.</li>
+<li>Формы «я» и «они» делят одну основу (jadę / jadą, biorę / biorą), формы «ты» — «вы» делят другую (jedziesz / jedziemy, bierzesz / bierzemy).</li>
+<li>«Спасибо» — это глагол: dziękuję (я благодарю), dziękujemy (мы благодарим).</li>
+<li>Направление движения: do + родительный (do sklepu, do domu, do biura), а не w + винительный.</li>
+<li>Настоящее время с указанием времени обозначает ближайшее будущее: Jutro kupuję kawę.</li>
+</ul>`,
+words:[["работать","pracować"],["покупать","kupować"],["планировать","planować"],["писать","pisać"],["идти","iść"],["ехать","jechać"],["хотеть","chcieć"],["брать","brać"],["благодарить, спасибо","dziękować / dziękuję"],["сообщение","wiadomość"],["оферта, предложение","oferta"],["фирма","firma"],["магазин","sklep"],["завтра","jutro"],["домой","do domu"],["отчёт","raport"],["такси","taksówka"],["куда","dokąd"]],
+s:[
+{ru:"Я работаю в фирме.",pl:"Pracuję w firmie.",acc:["[Ja] pracuję w firmie"],d:["pracujesz","pracuje","firma"],note:"Глаголы на -ować: -ować → -uję: pracuję, pracujesz, pracuje, pracujemy, pracujecie, pracują. firma → w firmie (предложный, урок 11)."},
+{ru:"Ты пишешь оферту?",pl:"Piszesz ofertę?",acc:["[Czy] [ty] piszesz ofertę"],d:["piszę","pisze","oferta"],note:"pisać → piszę, piszesz, pisze, piszemy, piszecie, piszą (s → sz во всех формах настоящего). oferta → ofertę (винительный)."},
+{ru:"Мы идём в магазин.",pl:"Idziemy do sklepu.",acc:["[My] idziemy do sklepu"],d:["idę","idą","sklep"],note:"iść: idę, idziesz, idzie, idziemy, idziecie, idą. Направление «в магазин» = do + родительный: sklep → do sklepu (не w sklep!)."},
+{ru:"Он едет домой.",pl:"Jedzie do domu.",acc:["[On] jedzie do domu"],d:["jadę","jadą","dom"],note:"jechać (на транспорте): jadę, jedziesz, jedzie, jedziemy, jedziecie, jadą — чередование ja- / je-. «Домой» = do domu."},
+{ru:"Я хочу кофе.",pl:"Chcę kawę.",acc:["[Ja] chcę {kawę|kawy}"],d:["chcesz","chce","kawa"],note:"chcieć: chcę, chcesz, chce, chcemy, chcecie, chcą. kawa → kawę (винительный). Chcę kawy (родительный) — «хочу (немного) кофе», тоже верно. Вежливее: Poproszę kawę."},
+{ru:"Они планируют встречу.",pl:"Planują spotkanie.",acc:["[{Oni|One}] planują spotkanie"],d:["planuje","planujemy","spotkania"],note:"planować → planuję … planują. spotkanie — средний род: винительный = именительный."},
+{ru:"Мы берём такси.",pl:"Bierzemy taksówkę.",acc:["[My] bierzemy taksówkę"],d:["biorę","biorą","taksówka"],note:"brać: biorę, bierzesz, bierze, bierzemy, bierzecie, biorą — основа bior- в формах «я» и «они», bierz- в остальных. taksówka → taksówkę."},
+{ru:"Спасибо за сообщение.",pl:"Dziękuję za wiadomość.",acc:["Dziękuję za wiadomość"],d:["dziękujemy","dziękujesz","wiadomości"],note:"«Спасибо» — это глагол dziękuję («благодарю»); от нескольких человек — dziękujemy. dziękować za + винительный; wiadomość (женский род на согласный) в винительном не меняется."},
+{ru:"Вы (Pan) хотите отчёт?",pl:"Chce Pan raport?",acc:["[Czy] {chce Pan|Pan chce} raport"],d:["chcesz","chcę","Pani"],note:"Pan + 3-е лицо: Pan chce. raport — мужской неодушевлённый: винительный = именительный."},
+{ru:"Завтра я покупаю кофе.",pl:"Jutro kupuję kawę.",acc:["[Ja] {jutro kupuję kawę|kupuję kawę jutro|kupuję jutro kawę}","Jutro [ja] kupuję kawę"],d:["kupujesz","kupują","kawa"],note:"kupować → kupuję. Настоящее время с указанием времени обозначает ближайшее будущее: Jutro kupuję kawę. Обстоятельство времени чаще стоит в начале."},
+{ru:"Куда ты идёшь?",pl:"Dokąd idziesz?",acc:["{Dokąd|Gdzie} [ty] idziesz"],d:["idę","idzie","idą"],note:"«Куда» = dokąd (норма). В разговорной речи почти всегда gdzie idziesz? — тренажёр это принимает, но dokąd — нормативный вариант."}
+]});
+
+/* ===== Уроки 4–6: отрицание, вопрос, прошедшее время ===== */
+LESSONS.push({
+n:4, title:"Отрицание nie и родительный падеж", sub:"nie mam czasu, nie ma biura, nic nie wiem",
+rule:`<p>Отрицание строится одинаково во всех временах: <b>nie</b> пишется отдельно и стоит прямо перед глаголом. Главная ловушка: прямое дополнение при отрицании переходит из винительного падежа в родительный.</p>
+<table><tr><th>Утверждение (вин. п.)</th><th>Отрицание (род. п.)</th></tr>
+<tr><td>Mam czas.</td><td>Nie mam czas<b>u</b>.</td></tr>
+<tr><td>Czytam umow<b>ę</b>.</td><td>Nie czytam umow<b>y</b>.</td></tr>
+<tr><td>Znam klient<b>a</b>.</td><td>Nie znam klient<b>a</b>. (одуш.: вин. = род.)</td></tr>
+<tr><td>Mamy pieniądze.</td><td>Nie mamy pieni<b>ę</b>dz<b>y</b>.</td></tr>
+<tr><td>Jest biuro.</td><td>Nie ma biur<b>a</b>.</td></tr></table>
+<p>Окончания родительного: мужской неодушевлённый обычно -u (czasu, budżetu, sklepu, domu, dokumentu, telefonu), у части слов -a (chleba, ołówka) — такие запоминаются по словарю; одушевлённый -a (klienta, szefa); женский -y, после k, g — -i (umowy, faktury, reklamy, książki); средний -a (biura, spotkania, pytania).</p>
+<ul>
+<li>«Нет (не имеется)» — застывшая форма <b>nie ma</b> + родительный: Nie ma czasu. Nie ma pieniędzy. Nie ma Pana Kowalskiego. Она не меняется по числам.</li>
+<li>Двойное отрицание обязательно, как в русском: nic nie wiem, nikt nie dzwoni, nigdy nie płaci. При nikt и nic глагол стоит в 3-м лице ед. ч.</li>
+<li>Родительный требуется только у прямого дополнения. Дополнение с предлогом не меняется: nie mamy budżetu <i>na reklamę</i>; nie płaci <i>na czas</i>.</li>
+<li>Если отрицается не глагол, а именная часть, jest часто опускается: To nie problem. To nie ja.</li>
+<li>Два «знать»: <b>znać</b> — знать кого-то / что-то (znam klienta, znam Warszawę); <b>wiedzieć</b> — знать, что / где / когда (wiem, gdzie on jest).</li>
+</ul>
+<p>Подтип -em/-esz: rozumieć — rozumiem, rozumiesz, rozumie, rozumiemy, rozumiecie, rozumieją; wiedzieć — wiem, wiesz, wie, wiemy, wiecie, wiedzą.</p>`,
+words:[["понимать","rozumieć"],["знать (факт)","wiedzieć"],["ничего","nic"],["никогда","nigdy"],["никто","nikt"],["деньги","pieniądze"],["бюджет","budżet"],["реклама","reklama"],["вопрос","pytanie"],["ответ","odpowiedź"],["документ","dokument"],["нет (не имеется)","nie ma"],["ещё","jeszcze"],["уже","już"],["никакой","żaden"],["здесь","tu / tutaj"],["вовремя","na czas"],["это","to"]],
+s:[
+{ru:"Я не понимаю.",pl:"Nie rozumiem.",acc:["[Ja] nie rozumiem"],d:["rozumiesz","rozumie","ma"],note:"nie пишется отдельно и стоит прямо перед глаголом. rozumieć — подтип -em/-esz: rozumiem, rozumiesz, rozumie, rozumiemy, rozumiecie, rozumieją."},
+{ru:"У меня нет времени.",pl:"Nie mam czasu.",acc:["[Ja] nie mam czasu"],d:["czas","masz","ma"],note:"Главное правило урока: при отрицании прямое дополнение переходит из винительного в родительный: Mam czas → Nie mam czasu."},
+{ru:"Он не читает договор.",pl:"Nie czyta umowy.",acc:["[On] nie czyta umowy"],d:["umowę","umowa","czytam"],note:"umowa: винительный umowę, но после nie — родительный umowy. Женский род в родительном: -a → -y, а после k, g → -i (książka → książki)."},
+{ru:"Мы не знаем клиента.",pl:"Nie znamy klienta.",acc:["[My] nie znamy klienta"],d:["klient","znam","znają"],note:"У одушевлённых мужского рода винительный и родительный совпадают — klienta. Поэтому Znamy klienta и Nie znamy klienta — одна и та же форма."},
+{ru:"У нас нет денег.",pl:"Nie mamy pieniędzy.",acc:["[My] nie mamy pieniędzy"],d:["pieniądze","mam","mają"],note:"pieniądze (деньги; только мн. ч.) → родительный pieniędzy, с чередованием ą → ę. «У нас нет» = nie mamy."},
+{ru:"Здесь нет офиса.",pl:"Tu nie ma biura.",acc:["{Tu|Tutaj} nie ma biura","Nie ma {tu|tutaj} biura"],d:["biuro","jest","mamy"],note:"«Нет (не имеется)» = nie ma + родительный: biuro → biura. Это застывшая форма, она не зависит от числа: Nie ma pieniędzy. Nie ma klientów."},
+{ru:"Я ничего не знаю.",pl:"Nic nie wiem.",acc:["[Ja] nic nie wiem","Nie wiem nic"],d:["wiesz","wie","nikt"],note:"Двойное отрицание, как в русском: nic nie wiem. wiedzieć (знать факт): wiem, wiesz, wie, wiemy, wiecie, wiedzą. znać — знать кого-то или что-то; wiedzieć — знать, что / где / когда."},
+{ru:"Никто не звонит.",pl:"Nikt nie dzwoni.",acc:["Nikt nie dzwoni"],d:["dzwonię","dzwonią","nic"],note:"nikt — «никто», глагол при нём стоит в 3-м лице ед. ч.: nikt nie dzwoni, nikt nie wie."},
+{ru:"Он никогда не платит вовремя.",pl:"Nigdy nie płaci na czas.",acc:["[On] nigdy nie płaci na czas","[On] nie płaci nigdy na czas"],d:["płacę","płacą","czasu"],note:"nigdy + nie — двойное отрицание обязательно. «Вовремя» = na czas: это обстоятельство с предлогом, а не прямое дополнение, поэтому родительный здесь не нужен."},
+{ru:"У нас нет бюджета на рекламу.",pl:"Nie mamy budżetu na reklamę.",acc:["[My] nie mamy budżetu na reklamę"],d:["budżet","reklamy","mam"],note:"В родительный переходит только прямое дополнение: budżet → budżetu. Дополнение с предлогом na остаётся в винительном: na reklamę."},
+{ru:"Это не проблема.",pl:"To nie problem.",acc:["To nie [jest] problem"],d:["problemu","ma","są"],note:"При отрицании именной части nie ставится перед существительным, а jest часто опускается: To nie problem / To nie jest problem. Родительный не нужен — problem здесь не прямое дополнение."},
+{ru:"У вас (Pan) нет вопросов?",pl:"Nie ma Pan pytań?",acc:["[Czy] {nie ma Pan|Pan nie ma} pytań"],d:["pytania","masz","Pani"],note:"pytanie → мн. ч. pytania → родительный мн. ч. pytań (нулевое окончание, n → ń). Pan + 3-е лицо: Pan nie ma."}
+]});
+
+LESSONS.push({
+n:5, title:"Вопрос: czy и вопросительные слова", sub:"Czy masz czas? Kto? Co? Gdzie? Kiedy? Ile?",
+rule:`<p>Общий вопрос (ответ «да / нет») строится частицей <b>czy</b> в начале предложения. Порядок слов после неё не меняется: <i>Masz czas. → Czy masz czas?</i> В разговоре czy часто опускают и спрашивают интонацией: <i>Masz czas?</i></p>
+<p>С вопросительным словом czy не нужно: <i>Co robisz? Gdzie jest biuro?</i></p>
+<table><tr><th>Слово</th><th>Значение</th><th>Пример</th></tr>
+<tr><td>kto</td><td>кто</td><td>Kto to jest?</td></tr>
+<tr><td>co</td><td>что</td><td>Co to jest? Co robisz?</td></tr>
+<tr><td>gdzie</td><td>где</td><td>Gdzie jest biuro?</td></tr>
+<tr><td>dokąd</td><td>куда</td><td>Dokąd idziesz?</td></tr>
+<tr><td>skąd</td><td>откуда</td><td>Skąd jesteś?</td></tr>
+<tr><td>kiedy</td><td>когда</td><td>Kiedy jest spotkanie?</td></tr>
+<tr><td>o której</td><td>во сколько</td><td>O której jest spotkanie?</td></tr>
+<tr><td>dlaczego / czemu</td><td>почему</td><td>Dlaczego nie dzwonisz?</td></tr>
+<tr><td>jak</td><td>как</td><td>Jak się Pan nazywa?</td></tr>
+<tr><td>ile</td><td>сколько</td><td>Ile to kosztuje?</td></tr>
+<tr><td>jaki / jaka / jakie</td><td>какой / какая / какое</td><td>Jaka jest cena?</td></tr>
+<tr><td>który / która / które</td><td>который</td><td>Który klient?</td></tr></table>
+<ul>
+<li>В вопросе с Pan / Pani глагол обычно идёт первым: Ma Pan czas? Jak się Pani nazywa?</li>
+<li>Kto to jest? / Co to jest? — jest можно опустить: Kto to? Co to?</li>
+<li>Косвенный вопрос строится так же, как прямой: Wiesz, gdzie on jest? Nie wiem, kiedy przyjdzie.</li>
+<li>Ответы: tak (да), nie (нет), oczywiście (конечно), może (может быть), nie wiem (не знаю).</li>
+</ul>`,
+words:[["ли (вопросительная частица)","czy"],["кто","kto"],["что","co"],["где","gdzie"],["когда","kiedy"],["почему","dlaczego"],["как","jak"],["сколько","ile"],["откуда","skąd"],["какой","jaki"],["во сколько?","o której?"],["да","tak"],["нет","nie"],["конечно","oczywiście"],["стоить","kosztować"],["называться (по имени)","nazywać się"],["сегодня","dzisiaj / dziś"],["час","godzina"]],
+s:[
+{ru:"У тебя есть время?",pl:"Czy masz czas?",acc:["[Czy] [ty] masz czas"],d:["mam","ma","czasu"],note:"Общий вопрос: czy + утверждение без изменения порядка слов. В речи czy часто опускают: Masz czas?"},
+{ru:"Ты работаешь завтра?",pl:"Czy pracujesz jutro?",acc:["[Czy] [ty] {pracujesz jutro|jutro pracujesz}"],d:["pracuję","pracuje","dzisiaj"],note:"czy + глагол во 2-м лице. jutro можно ставить и в начало, и в конец: Czy jutro pracujesz?"},
+{ru:"Кто это?",pl:"Kto to jest?",acc:["Kto to [jest]"],d:["co","kim","jestem"],note:"Kto to (jest)? — jest можно опустить. Ответ: To (jest) Marek."},
+{ru:"Что это?",pl:"Co to jest?",acc:["Co to [jest]"],d:["kto","czym","są"],note:"Co to (jest)? Ответ: To (jest) umowa. Слово to («это») не меняется по родам."},
+{ru:"Где офис?",pl:"Gdzie jest biuro?",acc:["Gdzie [jest] biuro"],d:["dokąd","biura","są"],note:"gdzie — «где» (место). Не путать с dokąd — «куда» (направление): Dokąd idziesz? В вопросе связку jest обычно сохраняют: Gdzie jest biuro?"},
+{ru:"Когда встреча?",pl:"Kiedy jest spotkanie?",acc:["Kiedy [jest] spotkanie"],d:["gdzie","spotkania","są"],note:"kiedy — «когда». Kiedy jest spotkanie? Ответ: Jutro o trzeciej. Связка jest в польском вопросе не пропадает."},
+{ru:"Почему ты не звонишь?",pl:"Dlaczego nie dzwonisz?",acc:["{Dlaczego|Czemu} [ty] nie dzwonisz"],d:["dzwonię","dzwoni","dlatego"],note:"dlaczego — «почему»; разговорный синоним czemu тоже принимается. Отрицание внутри вопроса не меняет порядка слов. Не путать с dlatego — «поэтому»."},
+{ru:"Сколько это стоит?",pl:"Ile to kosztuje?",acc:["Ile [to] kosztuje"],d:["kosztują","jak","kosztuję"],note:"ile — «сколько»; kosztować → kosztuje (это стоит), kosztują (они стоят). Ile to kosztuje? — стандартная фраза в магазине и в переговорах."},
+{ru:"Как вас (Pan) зовут?",pl:"Jak Pan się nazywa?",acc:["Jak {Pan się nazywa|się Pan nazywa}"],d:["nazywasz","nazywam","Pani"],note:"nazywać się: nazywam się, nazywasz się, nazywa się. С Pan — 3-е лицо: Jak Pan się nazywa? / Jak się Pan nazywa? Спросить только имя: Jak ma Pan na imię?"},
+{ru:"Откуда ты?",pl:"Skąd jesteś?",acc:["Skąd [ty] jesteś"],d:["jestem","gdzie","jest"],note:"skąd — «откуда». Skąd jesteś? — Jestem z Ukrainy / z Kijowa. В ответе z + родительный."},
+{ru:"Во сколько встреча?",pl:"O której jest spotkanie?",acc:["O której [godzinie] [jest] spotkanie"],d:["kiedy","która","spotkania"],note:"«Во сколько?» = O której (godzinie)? — буквально «в котором часе». Ответ: O dziesiątej (в десять)."},
+{ru:"Ты знаешь, где он?",pl:"Wiesz, gdzie on jest?",acc:["[Czy] [ty] wiesz gdzie [on] jest"],d:["znasz","wiem","dokąd"],note:"Косвенный вопрос: wiesz, gdzie… (на письме перед gdzie ставится запятая; при проверке знаки не учитываются). wiedzieć — «знать, что / где», znać — «знать кого-то». Связка jest сохраняется: gdzie on jest."}
+]});
+
+LESSONS.push({
+n:6, title:"Прошедшее время: род говорящего", sub:"byłem / byłam, był / była / było, byliśmy / byłyśmy",
+rule:`<p>Прошедшее время образуется от инфинитива: -ć убирается, добавляется -ł- и окончание, которое показывает и лицо, и род. Поэтому мужчина и женщина говорят о себе по-разному: <b>byłem</b> / <b>byłam</b>.</p>
+<table><tr><th></th><th>мужской</th><th>женский</th><th>средний</th></tr>
+<tr><th>ja</th><td>byłem</td><td>byłam</td><td>—</td></tr>
+<tr><th>ty</th><td>byłeś</td><td>byłaś</td><td>—</td></tr>
+<tr><th>on / ona / ono<br>Pan / Pani</th><td>był</td><td>była</td><td>było</td></tr>
+<tr><th>my</th><td>byliśmy</td><td>byłyśmy</td><td>—</td></tr>
+<tr><th>wy</th><td>byliście</td><td>byłyście</td><td>—</td></tr>
+<tr><th>oni / one<br>Państwo</th><td>byli</td><td>były</td><td>—</td></tr></table>
+<ul>
+<li>Во множественном числе мужская форма (-li) используется, если в группе есть хотя бы один мужчина (oni, Państwo). Только женщины, дети, предметы — one, -ły.</li>
+<li>Глаголы на -eć перед ł меняют e → a: mieć → miałem, miała; chcieć → chciałem; widzieć → widziałem; musieć → musiałem; zapomnieć → zapomniałem. Но в мужской форме мн. ч. e сохраняется: mieli, chcieli, widzieli, musieli, zapomnieli.</li>
+<li>iść — неправильный: szedłem / szłam, szedł / szła, szliśmy / szłyśmy, szli / szły.</li>
+<li>Порядок слов свободный, окончание можно даже перенести на другое слово (Wczoraj<b>śmy</b> byli), но для начала держите его на глаголе.</li>
+<li>Pan / Pani в прошедшем: Pan był, Pani była — глагол в 3-м лице и в роде собеседника.</li>
+</ul>`,
+words:[["вчера","wczoraj"],["утром","rano"],["вечером","wieczorem"],["допоздна","do późna"],["на прошлой неделе","w zeszłym tygodniu"],["Краков","Kraków"],["шеф, начальник","szef"],["коллега (м.)","kolega"],["заказ","zamówienie"],["подписать","podpisać"],["получить","dostać"],["забыть","zapomnieć"],["сказать","powiedzieć"],["встретить","spotkać"],["отпуск","urlop"],["потом","potem"],["неделя","tydzień"]],
+s:[
+{ru:"Я (м.) был в Кракове.",pl:"Byłem w Krakowie.",acc:["[Ja] byłem w Krakowie"],d:["byłam","był","Kraków"],note:"Прошедшее время зависит от рода говорящего: мужчина — byłem, женщина — byłam. Kraków → w Krakowie (ó → o в косвенных падежах)."},
+{ru:"Я (ж.) была в офисе.",pl:"Byłam w biurze.",acc:["[Ja] byłam w biurze"],d:["byłem","była","biuro"],note:"-łam — 1-е лицо женского рода. Окончания: -łem / -łam, -łeś / -łaś, -ł / -ła / -ło, -liśmy / -łyśmy, -liście / -łyście, -li / -ły."},
+{ru:"Ты (м.) был вчера на работе?",pl:"Byłeś wczoraj w pracy?",acc:["[Czy] [ty] {byłeś wczoraj w pracy|wczoraj byłeś w pracy|byłeś w pracy wczoraj}"],d:["byłaś","był","pracę"],note:"«На работе» = w pracy (предложный падеж от praca). byłeś — к мужчине, byłaś — к женщине."},
+{ru:"Она подписала договор.",pl:"Podpisała umowę.",acc:["[Ona] podpisała umowę"],d:["podpisał","podpisałam","umowy"],note:"3-е лицо: podpisał (он), podpisała (она), podpisało (оно). Дополнение — в винительном: umowę (родительный нужен только при отрицании)."},
+{ru:"Мы (м.) получили заказ.",pl:"Dostaliśmy zamówienie.",acc:["[My] dostaliśmy zamówienie"],d:["dostałyśmy","dostali","zamówienia"],note:"Мн. ч.: -liśmy — если в группе есть хоть один мужчина, -łyśmy — если только женщины. zamówienie — средний род: винительный = именительный."},
+{ru:"Они (ж.) работали допоздна.",pl:"Pracowały do późna.",acc:["[One] pracowały do późna"],d:["pracowali","pracowała","późno"],note:"one (только женщины или предметы) → -ły: pracowały. oni (есть мужчины) → -li: pracowali. «Допоздна» = do późna."},
+{ru:"Клиент звонил утром.",pl:"Klient dzwonił rano.",acc:["Klient {dzwonił rano|rano dzwonił}","Rano dzwonił klient"],d:["dzwoniła","dzwonili","rana"],note:"dzwonić → dzwonił (он), dzwoniła (она). rano — «утром» (наречие, не меняется)."},
+{ru:"Я (м.) забыл о встрече.",pl:"Zapomniałem o spotkaniu.",acc:["[Ja] zapomniałem o spotkaniu"],d:["zapomniałam","zapomniał","spotkanie"],note:"zapomnieć: e → a перед ł: zapomniałem, zapomniała, но мн. ч. мужская форма zapomnieli. zapomnieć o + предложный: spotkanie → o spotkaniu."},
+{ru:"Что вы (Pan) сказали?",pl:"Co Pan powiedział?",acc:["Co {Pan powiedział|powiedział Pan}"],d:["powiedziała","powiedziałeś","Pani"],note:"К мужчине — Pan powiedział, к женщине — Pani powiedziała: глагол в 3-м лице и в роде собеседника. powiedzieć: powiedziałem, powiedziała, powiedzieli."},
+{ru:"У нас (ж.) не было времени.",pl:"Nie miałyśmy czasu.",acc:["[My] nie miałyśmy czasu"],d:["mieliśmy","miałam","czas"],note:"mieć: miałem / miałam, miał / miała, mieliśmy (есть мужчина) / miałyśmy (только женщины). После nie — родительный: czasu."},
+{ru:"Вчера вечером я (ж.) встретила шефа.",pl:"Wczoraj wieczorem spotkałam szefa.",acc:["[Ja] {wczoraj wieczorem spotkałam szefa|spotkałam szefa wczoraj wieczorem|spotkałam wczoraj wieczorem szefa}","Wczoraj wieczorem [ja] spotkałam szefa"],d:["spotkałem","spotkała","szef"],note:"szef → szefa (одушевлённый, винительный). wczoraj wieczorem — «вчера вечером». spotkałam — говорит женщина, spotkałem — мужчина."},
+{ru:"Это было вчера.",pl:"To było wczoraj.",acc:["To było wczoraj","Było to wczoraj"],d:["był","była","byłem"],note:"to — средний род: było. Средний род в прошедшем — -ło: było, zamówienie przyszło."}
+]});
+
+/* ===== Уроки 7–9: будущее с będę, совершенный вид, винительный падеж ===== */
+LESSONS.push({
+n:7, title:"Будущее время: będę + инфинитив", sub:"będę czekać, będziemy rozmawiać, nie będzie płacić",
+rule:`<p>У глаголов несовершенного вида будущее составное: форма будущего от <b>być</b> + инфинитив. Это прямой аналог русского «буду ждать».</p>
+<table><tr><th></th><th>być (будущее)</th><th>+ инфинитив</th><th>или + форма на -ł (с родом)</th></tr>
+<tr><th>ja</th><td>będę</td><td>będę czekać</td><td>będę czekał / czekała</td></tr>
+<tr><th>ty</th><td>będziesz</td><td>będziesz czekać</td><td>będziesz czekał / czekała</td></tr>
+<tr><th>on / ona / ono<br>Pan / Pani</th><td>będzie</td><td>będzie czekać</td><td>będzie czekał / czekała / czekało</td></tr>
+<tr><th>my</th><td>będziemy</td><td>będziemy czekać</td><td>będziemy czekali / czekały</td></tr>
+<tr><th>wy</th><td>będziecie</td><td>będziecie czekać</td><td>będziecie czekali / czekały</td></tr>
+<tr><th>oni / one<br>Państwo</th><td>będą</td><td>będą czekać</td><td>będą czekali / czekały</td></tr></table>
+<ul>
+<li>Оба варианта правильны. Вариант с инфинитивом проще и не требует рода; вариант с -ł чуть более разговорный. Тренажёр принимает оба.</li>
+<li>Будущее самого być — просто będę: <i>Jutro będę w biurze.</i> Никогда не «będę być».</li>
+<li>Отрицание — перед вспомогательным глаголом: <i>nie będzie płacić.</i></li>
+<li>Вопрос — czy + та же конструкция: <i>Czy będziesz pracować w sobotę?</i></li>
+<li>Для разовых действий поляки чаще используют совершенный вид (урок 8): <i>Zadzwonię</i> (позвоню), а не <i>będę dzwonić</i> (буду звонить).</li>
+</ul>
+<p>Дни недели с предлогом w + винительный: w poniedziałek, we wtorek, w środę, w czwartek, w piątek, w sobotę, w niedzielę. «На следующей неделе» = w przyszłym tygodniu, «на прошлой» = w zeszłym tygodniu, «через неделю» = za tydzień.</p>`,
+words:[["буду / будешь / будет","będę / będziesz / będzie"],["на следующей неделе","w przyszłym tygodniu"],["через неделю","za tydzień"],["в понедельник","w poniedziałek"],["во вторник","we wtorek"],["в среду","w środę"],["в четверг","w czwartek"],["в пятницу","w piątek"],["в субботу","w sobotę"],["в воскресенье","w niedzielę"],["цена","cena"],["проверять","sprawdzać"],["отправлять","wysyłać"],["позже","później"],["много","dużo"],["дорого","drogo"],["дёшево","tanio"]],
+s:[
+{ru:"Я буду ждать.",pl:"Będę czekać.",acc:["[Ja] będę {czekać|czekał|czekała}"],d:["będziesz","czekam","będzie"],note:"Будущее несовершенного вида: będę + инфинитив (będę czekać). Второй правильный вариант — będę + форма на -ł с родом: będę czekał (м.) / czekała (ж.). Принимаются оба."},
+{ru:"Завтра я буду в офисе.",pl:"Jutro będę w biurze.",acc:["[Ja] {jutro będę w biurze|będę jutro w biurze|będę w biurze jutro}","Jutro [ja] będę w biurze"],d:["będziesz","jestem","biuro"],note:"У być будущее — просто będę, без второго глагола: Będę w biurze. Не «będę być»!"},
+{ru:"Ты будешь работать в субботу?",pl:"Będziesz pracować w sobotę?",acc:["[Czy] [ty] {będziesz {pracować|pracował|pracowała} w sobotę|w sobotę będziesz {pracować|pracował|pracowała}}"],d:["będę","pracujesz","sobota"],note:"Дни недели с w + винительный: w sobotę, w środę, w piątek, w poniedziałek, we wtorek (we — перед wt-). będziesz — «ты будешь»."},
+{ru:"Мы будем разговаривать о цене.",pl:"Będziemy rozmawiać o cenie.",acc:["[My] będziemy {rozmawiać|rozmawiali|rozmawiały} o cenie"],d:["będę","rozmawiamy","cenę"],note:"rozmawiać o + предложный: cena → o cenie. «Будем» = będziemy."},
+{ru:"Он не будет платить.",pl:"Nie będzie płacić.",acc:["[On] nie będzie {płacić|płacił}"],d:["będą","płaci","będę"],note:"Отрицание в будущем: nie перед będzie: nie będzie płacić. Отрицается вспомогательный глагол, а не инфинитив."},
+{ru:"Когда вы (Pani) будете в Варшаве?",pl:"Kiedy będzie Pani w Warszawie?",acc:["Kiedy {będzie Pani|Pani będzie} w Warszawie"],d:["będziesz","będą","Pan"],note:"Pani + 3-е лицо: będzie Pani / Pani będzie. Порядок «глагол — Pani» типичен для вопросов."},
+{ru:"Они будут проверять документы.",pl:"Będą sprawdzać dokumenty.",acc:["[{Oni|One}] będą {sprawdzać|sprawdzali|sprawdzały} dokumenty"],d:["będzie","sprawdzają","dokumentów"],note:"dokument → мн. ч. dokumenty (у неодушевлённых винительный = именительный). «Будут» = będą."},
+{ru:"На следующей неделе будет встреча.",pl:"W przyszłym tygodniu będzie spotkanie.",acc:["{W przyszłym tygodniu będzie spotkanie|Spotkanie będzie w przyszłym tygodniu|Będzie spotkanie w przyszłym tygodniu}"],d:["będą","zeszłym","spotkania"],note:"«На следующей неделе» = w przyszłym tygodniu (предложный). Ср. «на прошлой неделе» = w zeszłym tygodniu. będzie — «будет»."},
+{ru:"Мы будем отправлять счета в пятницу.",pl:"Będziemy wysyłać faktury w piątek.",acc:["[My] {będziemy {wysyłać|wysyłali|wysyłały} faktury w piątek|w piątek będziemy {wysyłać|wysyłali|wysyłały} faktury}"],d:["będę","wysyłamy","fakturę"],note:"faktura → мн. ч. faktury (винительный = именительный). w piątek — «в пятницу»."},
+{ru:"Это будет дорого стоить.",pl:"To będzie dużo kosztować.",acc:["To będzie {dużo|drogo} kosztować","To będzie kosztować {dużo|drogo}"],d:["będą","kosztuje","tanio"],note:"«Дорого стоить» — kosztować dużo («стоить много») или drogo. Оба употребимы; dużo kosztować звучит естественнее."},
+{ru:"Я буду звонить позже.",pl:"Będę dzwonić później.",acc:["[Ja] {będę {dzwonić|dzwonił|dzwoniła} później|później będę {dzwonić|dzwonił|dzwoniła}}"],d:["będziesz","dzwonię","wcześniej"],note:"później — «позже» (wcześniej — «раньше»). Естественнее сказать совершенным видом: Zadzwonię później (урок 8), но будущее с będę тоже верно."}
+]});
+
+LESSONS.push({
+n:8, title:"Вид: совершенная форма как будущее", sub:"zrobię, powiem, kupię, wyślę, zadzwonię",
+rule:`<p>У глаголов совершенного вида нет настоящего времени. Их «настоящая» форма означает будущее — точно как в русском: <b>zrobię</b> = «сделаю», <b>powiem</b> = «скажу», <b>kupię</b> = «куплю». Спрягаются они по тем же трём группам.</p>
+<table><tr><th>несов. (процесс)</th><th>сов. (результат)</th><th>«я» (= будущее)</th><th>«он / она»</th></tr>
+<tr><td>robić</td><td>zrobić</td><td>zrobię</td><td>zrobi</td></tr>
+<tr><td>mówić</td><td>powiedzieć</td><td>powiem</td><td>powie</td></tr>
+<tr><td>kupować</td><td>kupić</td><td>kupię</td><td>kupi</td></tr>
+<tr><td>pisać</td><td>napisać</td><td>napiszę</td><td>napisze</td></tr>
+<tr><td>wysyłać</td><td>wysłać</td><td>wyślę</td><td>wyśle</td></tr>
+<tr><td>dzwonić</td><td>zadzwonić</td><td>zadzwonię</td><td>zadzwoni</td></tr>
+<tr><td>płacić</td><td>zapłacić</td><td>zapłacę</td><td>zapłaci</td></tr>
+<tr><td>czytać</td><td>przeczytać</td><td>przeczytam</td><td>przeczyta</td></tr>
+<tr><td>sprawdzać</td><td>sprawdzić</td><td>sprawdzę</td><td>sprawdzi</td></tr>
+<tr><td>dawać</td><td>dać</td><td>dam</td><td>da</td></tr>
+<tr><td>iść</td><td>pójść</td><td>pójdę</td><td>pójdzie</td></tr>
+<tr><td>widzieć</td><td>zobaczyć</td><td>zobaczę</td><td>zobaczy</td></tr>
+<tr><td>przygotowywać</td><td>przygotować</td><td>przygotuję</td><td>przygotuje</td></tr></table>
+<ul>
+<li>Совершенный вид образуется приставкой (z-, za-, na-, wy-, po-, prze-) или другой основой (kupować → kupić, mówić → powiedzieć).</li>
+<li>Не соединяйте będę с совершенным видом: «będę zrobić» — ошибка. Либо będę robić, либо zrobię.</li>
+<li>Неправильные формы: powiedzieć — powiem, powiesz, powie, powiemy, powiecie, powiedzą; dać — dam, dasz, da, damy, dacie, dadzą.</li>
+<li>В деловой речи будущее почти всегда совершенного вида: Zadzwonię. Wyślę fakturę. Sprawdzę i dam znać (проверю и дам знать).</li>
+</ul>`,
+words:[["сделать","zrobić (zrobię)"],["сказать","powiedzieć (powiem)"],["купить","kupić (kupię)"],["написать","napisać (napiszę)"],["отправить","wysłać (wyślę)"],["позвонить","zadzwonić (zadzwonię)"],["заплатить","zapłacić (zapłacę)"],["прочитать","przeczytać (przeczytam)"],["проверить","sprawdzić (sprawdzę)"],["дать","dać (dam)"],["пойти","pójść (pójdę)"],["подготовить","przygotować (przygotuję)"],["увидеть","zobaczyć (zobaczę)"],["решить","zdecydować (zdecyduję)"],["сразу, сейчас же","zaraz"],["через час","za godzinę"],["карта (банковская)","karta"]],
+s:[
+{ru:"Я сделаю это завтра.",pl:"Zrobię to jutro.",acc:["[Ja] {zrobię to jutro|jutro to zrobię|zrobię jutro to}","Jutro [ja] to zrobię"],d:["robię","zrobi","będę"],note:"Совершенный вид в форме настоящего = будущее: zrobię — «сделаю». Не «będę zrobić»! Пара: robić (делать) → zrobić (сделать)."},
+{ru:"Я позвоню позже.",pl:"Zadzwonię później.",acc:["[Ja] {zadzwonię później|później zadzwonię}"],d:["dzwonię","zadzwoni","będę"],note:"dzwonić (звонить, процесс) → zadzwonić (позвонить, разово): zadzwonię, zadzwonisz, zadzwoni… Самая частая деловая фраза: Zadzwonię później."},
+{ru:"Он купит кофе.",pl:"Kupi kawę.",acc:["[On] kupi kawę"],d:["kupuje","kupię","kawa"],note:"kupować (покупать) → kupić (купить): kupię, kupisz, kupi, kupimy, kupicie, kupią. kupi — «купит»."},
+{ru:"Мы напишем оферту сегодня.",pl:"Napiszemy ofertę dzisiaj.",acc:["[My] {napiszemy ofertę {dzisiaj|dziś}|{dzisiaj|dziś} napiszemy ofertę}","{Dzisiaj|Dziś} [my] napiszemy ofertę"],d:["piszemy","napiszę","oferta"],note:"pisać → napisać: napiszę, napiszesz, napisze, napiszemy, napiszecie, napiszą. dzisiaj = dziś."},
+{ru:"Я сразу отправлю счёт.",pl:"Zaraz wyślę fakturę.",acc:["[Ja] {zaraz wyślę fakturę|wyślę fakturę zaraz|wyślę zaraz fakturę}","Zaraz [ja] wyślę fakturę"],d:["wysyłam","wyśle","faktury"],note:"wysyłać → wysłać: wyślę, wyślesz, wyśle, wyślemy, wyślecie, wyślą. zaraz — «сейчас же, сразу»."},
+{ru:"Вы (Pan) заплатите картой?",pl:"Zapłaci Pan kartą?",acc:["[Czy] {zapłaci Pan|Pan zapłaci} kartą"],d:["zapłacisz","płaci","karta"],note:"zapłacić: zapłacę, zapłacisz, zapłaci… «Картой» — творительный: karta → kartą (урок 11). Pan + 3-е лицо."},
+{ru:"Что ты скажешь?",pl:"Co powiesz?",acc:["Co [ty] powiesz"],d:["mówisz","powiem","powie"],note:"powiedzieć — неправильный: powiem, powiesz, powie, powiemy, powiecie, powiedzą. Пара: mówić (говорить) → powiedzieć (сказать)."},
+{ru:"Они проверят документы в понедельник.",pl:"Sprawdzą dokumenty w poniedziałek.",acc:["[{Oni|One}] {sprawdzą dokumenty w poniedziałek|w poniedziałek sprawdzą dokumenty}","W poniedziałek [{oni|one}] sprawdzą dokumenty"],d:["sprawdzają","sprawdzi","dokumentów"],note:"sprawdzać → sprawdzić: sprawdzę, sprawdzisz, sprawdzi, sprawdzimy, sprawdzicie, sprawdzą. sprawdzą — «проверят»."},
+{ru:"Я дам тебе ответ через час.",pl:"Dam ci odpowiedź za godzinę.",acc:["[Ja] {dam ci odpowiedź za godzinę|za godzinę dam ci odpowiedź}","Za godzinę [ja] dam ci odpowiedź"],d:["daję","da","tobie"],note:"dać: dam, dasz, da, damy, dacie, dadzą. «Тебе» — ci (краткая безударная форма; tobie — только под ударением). «Через час» = za godzinę."},
+{ru:"Мы пойдём на встречу.",pl:"Pójdziemy na spotkanie.",acc:["[My] pójdziemy na spotkanie"],d:["idziemy","pójdę","spotkania"],note:"iść → pójść: pójdę, pójdziesz, pójdzie, pójdziemy, pójdziecie, pójdą. «На встречу» = na spotkanie (винительный)."},
+{ru:"Она подготовит договор до пятницы.",pl:"Przygotuje umowę do piątku.",acc:["[Ona] przygotuje umowę do piątku"],d:["przygotuję","przygotowuje","piątek"],note:"przygotować: przygotuję, przygotujesz, przygotuje… «До пятницы» = do piątku (do + родительный: piątek → piątku). przygotowuje — несов. вид «готовит»."},
+{ru:"Я решу завтра.",pl:"Zdecyduję jutro.",acc:["[Ja] {zdecyduję jutro|jutro zdecyduję}"],d:["zdecyduje","decyduję","będę"],note:"zdecydować: zdecyduję, zdecydujesz, zdecyduje. Несов. вид — decydować (decyduję — «решаю, принимаю решения»)."}
+]});
+
+LESSONS.push({
+n:9, title:"Винительный падеж дополнения", sub:"nową umowę, dobrego klienta, tę książkę, znam go",
+rule:`<p>Винительный падеж отвечает на вопрос «кого? что?» и стоит у прямого дополнения (без отрицания) и после предлогов na, za, o, w (куда? когда?), przez.</p>
+<table><tr><th>Род</th><th>Именительный</th><th>Винительный</th><th>Правило</th></tr>
+<tr><td>м. неодушевлённый</td><td>nowy telefon</td><td>nowy telefon</td><td>= именительный</td></tr>
+<tr><td>м. одушевлённый</td><td>dobry klient</td><td>dobr<b>ego</b> klient<b>a</b></td><td>= родительный</td></tr>
+<tr><td>ж. на -a</td><td>nowa umowa</td><td>now<b>ą</b> umow<b>ę</b></td><td>-a → -ę (у прилагательного -ą)</td></tr>
+<tr><td>ж. на согласный</td><td>ta wiadomość</td><td>tę wiadomość</td><td>= именительный</td></tr>
+<tr><td>средний</td><td>dobre pytanie</td><td>dobre pytanie</td><td>= именительный</td></tr>
+<tr><td>мн. ч., не мужчины</td><td>nowe faktury</td><td>nowe faktury</td><td>= именительный</td></tr>
+<tr><td>мн. ч., мужчины</td><td>nowi klienci</td><td>now<b>ych</b> klient<b>ów</b></td><td>= родительный</td></tr></table>
+<p>Указательное «эту»: норма — <b>tę</b> umowę; в живой речи почти все говорят <b>tą</b> umowę (по аналогии с nową). Тренажёр принимает оба, но нормативный вариант — tę: так пишут в документах и требуют на экзаменах. Мужской и средний род: ten telefon, tego klienta, to spotkanie.</p>
+<table><tr><th></th><th>меня</th><th>тебя</th><th>его</th><th>её</th><th>нас</th><th>вас</th><th>их</th></tr>
+<tr><th>вин.</th><td>mnie</td><td>cię</td><td>go</td><td>ją</td><td>nas</td><td>was</td><td>ich (мужчины) / je</td></tr>
+<tr><th>род. (после nie)</th><td>mnie</td><td>cię</td><td>go</td><td>jej</td><td>nas</td><td>was</td><td>ich</td></tr>
+<tr><th>после предлога</th><td>na mnie</td><td>na ciebie</td><td>na niego</td><td>na nią</td><td>na nas</td><td>na was</td><td>na nich / na nie</td></tr></table>
+<ul>
+<li>Краткие формы go, cię, ją не ставятся в начало предложения; полные jego, ciebie используются под ударением и после предлогов.</li>
+<li>Отрицание меняет падеж и у местоимений: Znam ją → Nie znam jej.</li>
+<li>Państwo (вежливое «вы» к группе) в винительном → Państwa: Zapraszam Państwa.</li>
+</ul>`,
+words:[["новый","nowy"],["хороший","dobry"],["этот / эта / это","ten / ta / to"],["эту (вин. п.)","tę"],["телефон","telefon"],["книга","książka"],["презентация","prezentacja"],["проект","projekt"],["партнёр","partner"],["руководитель","kierownik"],["меня / тебя","mnie / cię"],["его / её","go / ją"],["нас / вас","nas / was"],["их","ich"],["приглашать","zapraszać"],["спрашивать","pytać"],["но","ale"]],
+s:[
+{ru:"Я подписываю новый договор.",pl:"Podpisuję nową umowę.",acc:["[Ja] podpisuję nową umowę"],d:["nowy","umowa","podpisuje"],note:"Женский род в винительном: -a → -ę у существительного и -a → -ą у прилагательного: nowa umowa → nową umowę. podpisywać → podpisuję (несов. вид)."},
+{ru:"Он покупает новый телефон.",pl:"Kupuje nowy telefon.",acc:["[On] kupuje nowy telefon"],d:["nowego","nową","telefonu"],note:"Мужской неодушевлённый: винительный = именительный, у прилагательного тоже: nowy telefon. Форма nowego — только для одушевлённых (nowego klienta)."},
+{ru:"Мы знаем хорошего партнёра.",pl:"Znamy dobrego partnera.",acc:["[My] znamy dobrego partnera"],d:["dobry","partner","dobrą"],note:"Мужской одушевлённый: винительный = родительный: dobry partner → dobrego partnera (-ego / -a)."},
+{ru:"Ты видишь эту книгу?",pl:"Widzisz tę książkę?",acc:["[Czy] [ty] widzisz {tę|tą} książkę"],d:["ta","książka","ten"],note:"Норма: tę książkę. В живой речи почти все говорят tą książkę — по аналогии с nową. Тренажёр принимает оба, но пишите tę: это нормативная форма (в документах и на экзамене)."},
+{ru:"Я приглашаю вас (Państwo) на презентацию.",pl:"Zapraszam Państwa na prezentację.",acc:["[Ja] zapraszam Państwa na prezentację"],d:["Państwo","prezentacja","zapraszasz"],note:"Państwo (вежливое «вы» к группе) в винительном → Państwa. na + винительный: prezentacja → na prezentację. zapraszać: zapraszam."},
+{ru:"Она любит эту работу.",pl:"Lubi tę pracę.",acc:["[Ona] lubi {tę|tą} pracę"],d:["ta","pracy","lubię"],note:"praca → pracę; tę (норма) / tą (разговорное). После lubić — винительный, а не родительный: lubi pracę, но nie lubi pracy."},
+{ru:"Мы ждём их.",pl:"Czekamy na nich.",acc:["[My] czekamy na {nich|nie}"],d:["ich","je","nas"],note:"После предлога — формы с n-: na nich (их — есть мужчины), na nie (их — женщины или предметы), na niego, na nią. Без предлога: ich, je, go, ją."},
+{ru:"Ты понимаешь меня?",pl:"Rozumiesz mnie?",acc:["[Czy] [ty] {rozumiesz mnie|mnie rozumiesz}"],d:["mi","cię","rozumiem"],note:"«Меня» = mnie (винительный). Rozumiesz mnie? / Czy ty mnie rozumiesz? Форма mi — дательный («мне»): daj mi."},
+{ru:"Он спрашивает тебя о цене.",pl:"Pyta cię o cenę.",acc:["[On] pyta cię o cenę"],d:["ciebie","ci","ceny"],note:"pytać kogoś o coś: cię (винительный, краткая форма) + o + винительный: o cenę. ciebie — только под ударением или после предлога; ci — дательный («тебе»)."},
+{ru:"Я знаю его, но не знаю её.",pl:"Znam go, ale nie znam jej.",acc:["[Ja] znam go ale [ja] nie znam jej","[Ja] znam go ale jej nie znam"],d:["jego","ją","zna"],note:"«Её» после nie — родительный: jej (а не винительный ją). Ср.: Znam ją — Nie znam jej. «Его»: znam go — nie znam go (у go винительный = родительный)."},
+{ru:"У вас (Pani) хороший проект.",pl:"Ma Pani dobry projekt.",acc:["{Ma Pani|Pani ma} dobry projekt"],d:["dobrego","dobrą","projektu"],note:"projekt — мужской неодушевлённый: dobry projekt без изменений в винительном. Pani + 3-е лицо: ma Pani."},
+{ru:"Мы приглашаем клиентов на встречу.",pl:"Zapraszamy klientów na spotkanie.",acc:["[My] zapraszamy klientów na spotkanie"],d:["klienci","klienta","spotkania"],note:"Мн. ч. мужчин (мужско-личная форма): винительный = родительный: klienci (им.) → klientów. Женщины и предметы во мн. ч. не меняются: faktury, umowy, koleżanki."}
+]});
+
+/* ===== Уроки 10–12: модальные, творительный и предложный, притяжательные и Pan / Pani ===== */
+LESSONS.push({
+n:10, title:"Модальные: muszę, mogę, trzeba, można, wolno, powinien", sub:"muszę iść, można tu parkować?, nie wolno palić",
+rule:`<p>После модального слова всегда стоит инфинитив. Одни модальные спрягаются как обычные глаголы, другие — безличные и не меняются вовсе.</p>
+<table><tr><th></th><th>musieć<br>(должен, надо)</th><th>móc<br>(мочь)</th><th>umieć<br>(уметь)</th><th>chcieć<br>(хотеть)</th></tr>
+<tr><th>ja</th><td>muszę</td><td>mogę</td><td>umiem</td><td>chcę</td></tr>
+<tr><th>ty</th><td>musisz</td><td>możesz</td><td>umiesz</td><td>chcesz</td></tr>
+<tr><th>on / ona / Pan / Pani</th><td>musi</td><td>może</td><td>umie</td><td>chce</td></tr>
+<tr><th>my</th><td>musimy</td><td>możemy</td><td>umiemy</td><td>chcemy</td></tr>
+<tr><th>wy</th><td>musicie</td><td>możecie</td><td>umiecie</td><td>chcecie</td></tr>
+<tr><th>oni / one / Państwo</th><td>muszą</td><td>mogą</td><td>umieją</td><td>chcą</td></tr></table>
+<p>Безличные (не спрягаются): <b>trzeba</b> — нужно (trzeba wysłać ofertę); <b>można</b> — можно (czy można tu parkować?); <b>wolno</b> — разрешено (tu wolno palić); <b>nie wolno</b> — запрещено (строже, чем nie można); <b>warto</b> — стоит (warto sprawdzić).</p>
+<p><b>powinien</b> — «должен бы, следует» — меняется по роду и лицу, без глагола być:</p>
+<table><tr><th></th><th>мужской</th><th>женский</th></tr>
+<tr><th>ja</th><td>powinienem</td><td>powinnam</td></tr>
+<tr><th>ty</th><td>powinieneś</td><td>powinnaś</td></tr>
+<tr><th>on / ona / Pan / Pani</th><td>powinien</td><td>powinna</td></tr>
+<tr><th>my</th><td>powinniśmy</td><td>powinnyśmy</td></tr>
+<tr><th>wy</th><td>powinniście</td><td>powinnyście</td></tr>
+<tr><th>oni / one</th><td>powinni</td><td>powinny</td></tr></table>
+<ul>
+<li>móc — «мочь» (возможность, разрешение), umieć — «уметь» (навык). Русское «можешь говорить по-польски?» = Umiesz mówić po polsku?</li>
+<li>Вежливая просьба: Może Pan…? / Czy mogłaby Pani…? (ещё вежливее).</li>
+<li>«Мне нужно что-то» (предмет) — potrzebować + родительный: potrzebuję pomocy, potrzebuję czasu. «Нужно что-то сделать» — trzeba / muszę + инфинитив.</li>
+</ul>`,
+words:[["должен, мне надо","musieć (muszę)"],["мочь","móc (mogę)"],["нужно (безлично)","trzeba"],["можно","można"],["нельзя, запрещено","nie wolno"],["разрешено","wolno"],["следует, должен бы","powinien / powinna"],["уметь","umieć (umiem)"],["нуждаться в","potrzebować (+ род. п.)"],["помощь","pomoc"],["парковаться","parkować"],["курить","palić"],["повторить","powtórzyć"],["ещё раз","jeszcze raz"],["отдыхать","odpoczywać"],["спать","spać"],["рано","wcześnie"]],
+s:[
+{ru:"Я должен идти.",pl:"Muszę iść.",acc:["[Ja] muszę iść"],d:["musisz","musi","idę"],note:"musieć — «быть должным, надо»: muszę, musisz, musi, musimy, musicie, muszą. После модального — инфинитив: muszę iść."},
+{ru:"Ты можешь позвонить завтра?",pl:"Możesz zadzwonić jutro?",acc:["[Czy] [ty] {możesz zadzwonić jutro|możesz jutro zadzwonić|jutro możesz zadzwonić}"],d:["mogę","może","zadzwonisz"],note:"móc: mogę, możesz, może, możemy, możecie, mogą (g → ż в середине). После «можешь» — обычно совершенный вид: zadzwonić (разово)."},
+{ru:"Нужно отправить оферту.",pl:"Trzeba wysłać ofertę.",acc:["Trzeba wysłać ofertę"],d:["muszę","można","oferty"],note:"trzeba — безличное «нужно», не спрягается, за ним инфинитив. Дополнение в винительном: ofertę (при отрицании — родительный: nie trzeba wysyłać oferty)."},
+{ru:"Здесь можно парковаться?",pl:"Czy można tu parkować?",acc:["[Czy] {{można|wolno} {tu|tutaj} parkować|{tu|tutaj} {można|wolno} parkować|{można|wolno} parkować {tu|tutaj}}"],d:["mogę","możesz","parkuję"],note:"można — «можно» (есть возможность или разрешено), безличное, не спрягается. Синоним в значении «разрешено» — wolno (тоже принимается). «Здесь» = tu / tutaj."},
+{ru:"Здесь нельзя курить.",pl:"Tu nie wolno palić.",acc:["{Tu|Tutaj} nie {wolno|można} palić","Nie {wolno|można} {tu|tutaj} palić","Nie {wolno|można} palić {tu|tutaj}"],d:["trzeba","palę","musi"],note:"Запрет: nie wolno (строго, «запрещено») или nie można (мягче, «нельзя»). Оба верны. На табличках: Zakaz palenia."},
+{ru:"Вам (Pan) нужно проверить счёт.",pl:"Musi Pan sprawdzić fakturę.",acc:["{Musi Pan|Pan musi} sprawdzić fakturę"],d:["musisz","powinien","faktury"],note:"«Вам нужно» = musi Pan / musi Pani (3-е лицо). Не путайте с powinien (следует): Powinien Pan sprawdzić — «вам следовало бы»."},
+{ru:"Мне (ж.) следует позвонить клиенту.",pl:"Powinnam zadzwonić do klienta.",acc:["[Ja] powinnam zadzwonić do klienta"],d:["powinienem","powinna","klientowi"],note:"powinien — «должен (бы), следует»: м. powinienem, powinieneś, powinien; ж. powinnam, powinnaś, powinna. Без глагола być. zadzwonić do + родительный."},
+{ru:"Мы не можем ждать.",pl:"Nie możemy czekać.",acc:["[My] nie możemy czekać"],d:["mogę","możecie","czekamy"],note:"nie + móc: nie możemy czekać. Инфинитив несов. вида czekać — процесс."},
+{ru:"Ты умеешь говорить по-польски?",pl:"Umiesz mówić po polsku?",acc:["[Czy] [ty] umiesz mówić po polsku"],d:["możesz","umiem","umie"],note:"umieć — «уметь» (навык): umiem, umiesz, umie, umiemy, umiecie, umieją. móc — «мочь» (возможность). Русское «можешь говорить по-польски?» по-польски — umiesz."},
+{ru:"Мне нужна помощь.",pl:"Potrzebuję pomocy.",acc:["[Ja] potrzebuję pomocy"],d:["pomoc","potrzebujesz","trzeba"],note:"potrzebować + родительный: pomoc → pomocy. «Мне нужно / нужна (что-то)» = potrzebuję (я нуждаюсь). Ср. trzeba + инфинитив — нужно что-то сделать."},
+{ru:"Можете (Pani) повторить ещё раз?",pl:"Może Pani powtórzyć jeszcze raz?",acc:["[Czy] {może Pani|Pani może} {powtórzyć jeszcze raz|jeszcze raz powtórzyć}"],d:["możesz","mogę","Pan"],note:"Просьба через móc: Może Pani…? / Czy może Pan…? powtórzyć — «повторить», jeszcze raz — «ещё раз»."},
+{ru:"Они должны заплатить сегодня.",pl:"Muszą zapłacić dzisiaj.",acc:["[{Oni|One}] {muszą zapłacić {dzisiaj|dziś}|{dzisiaj|dziś} muszą zapłacić}"],d:["musi","musimy","zapłacą"],note:"musieć → muszą (они). После musieć — инфинитив нужного вида: zapłacić (разово). zapłacą — «заплатят», это уже будущее без модального."}
+]});
+
+LESSONS.push({
+n:11, title:"Творительный и предложный падежи", sub:"jestem inżynierem, jadę samochodem, mieszkam w Polsce",
+rule:`<p><b>Творительный</b> (кем? чем?) нужен после być, когда называете профессию, статус или национальность; после предлога z (с кем?); для средства передвижения и способа оплаты; после interesować się.</p>
+<table><tr><th>Род</th><th>Именительный</th><th>Творительный</th><th>Правило</th></tr>
+<tr><td>мужской</td><td>inżynier, klient, szef</td><td>inżynier<b>em</b>, klient<b>em</b>, szef<b>em</b></td><td>-em; после k, g → -iem (pociąg<b>iem</b>, bank<b>iem</b>)</td></tr>
+<tr><td>женский</td><td>Ukrainka, karta, koleżanka</td><td>Ukraink<b>ą</b>, kart<b>ą</b>, koleżank<b>ą</b></td><td>-a → -ą; на согласный: sprzedaż → sprzedaż<b>ą</b></td></tr>
+<tr><td>средний</td><td>biuro, miasto</td><td>biur<b>em</b>, miast<b>em</b></td><td>-o → -em</td></tr></table>
+<p><b>Предложный</b> (о ком? где?) употребляется только с предлогами: w (в), na (на), o (о), przy (при, у), po (после).</p>
+<table><tr><th>Окончание</th><th>Когда</th><th>Примеры</th></tr>
+<tr><td>-e с чередованием</td><td>твёрдая основа (м., ж., ср.)</td><td>sklep → w sklepie, Warszawa → w Warszawie, biuro → w biurze, umowa → o umowie, Kraków → w Krakowie, Polska → w Polsce (k → c), miasto → w mieście</td></tr>
+<tr><td>-u</td><td>м. и ср. на k, g, ch, j и мягкие</td><td>bank → w banku, dom → w domu, hotel → w hotelu, spotkanie → na spotkaniu</td></tr>
+<tr><td>-i / -y</td><td>ж. на мягкую, -ja, -ia, шипящие</td><td>restauracja → w restauracji, praca → w pracy, sprzedaż → o sprzedaży</td></tr></table>
+<ul>
+<li>w или na? Обычно w (w biurze, w Polsce, w Warszawie), но na — с событиями и «поверхностями»: na spotkaniu, na stronie, na uczelni, na poczcie, на Украине — na Ukrainie.</li>
+<li>Не путать: zadowolony <b>z</b> + родительный (z pracy, z umowy) — не творительный, как в русском «доволен работой».</li>
+<li>Направление (куда?) — do + родительный (do biura), место (где?) — w + предложный (w biurze).</li>
+</ul>`,
+words:[["инженер","inżynier"],["директор по продажам","dyrektor sprzedaży"],["продажа","sprzedaż"],["украинец / украинка","Ukrainiec / Ukrainka"],["машина","samochód"],["поезд","pociąg"],["с (кем? чем?)","z (+ твор. п.)"],["Польша","Polska"],["город","miasto"],["интересоваться","interesować się"],["довольный","zadowolony"],["сайт, страница","strona"],["информация","informacja"],["ресторан","restauracja"],["банк","bank"],["коллега (ж.)","koleżanka"],["о (чём?)","o (+ предл. п.)"]],
+s:[
+{ru:"Я инженер.",pl:"Jestem inżynierem.",acc:["[Ja] jestem inżynierem"],d:["inżynier","jest","inżyniera"],note:"Профессия или статус после być — творительный падеж: inżynier → inżynierem (-em). «Я инженер» = Jestem inżynierem, никогда «Jestem inżynier»."},
+{ru:"Он директор по продажам.",pl:"Jest dyrektorem sprzedaży.",acc:["[On] jest dyrektorem sprzedaży"],d:["dyrektor","jestem","sprzedaż"],note:"dyrektor → dyrektorem; sprzedaży — родительный от sprzedaż (директор чего? продаж). Творительный получает только главное слово."},
+{ru:"Она украинка.",pl:"Jest Ukrainką.",acc:["[Ona] jest Ukrainką"],d:["Ukrainka","Ukrainiec","jestem"],note:"Женский род в творительном: -a → -ą: Ukrainka → Ukrainką. Национальности пишутся с большой буквы (при проверке регистр не важен). Мужчина: Jestem Ukraińcem."},
+{ru:"Я еду на машине.",pl:"Jadę samochodem.",acc:["[Ja] jadę samochodem"],d:["samochód","jedzie","samochodu"],note:"Средство передвижения — творительный без предлога: samochodem, pociągiem, autobusem, tramwajem. samochód → samochodem (ó → o)."},
+{ru:"Мы разговариваем с шефом о договоре.",pl:"Rozmawiamy z szefem o umowie.",acc:["[My] rozmawiamy z szefem o umowie"],d:["szef","umową","umowy"],note:"z + творительный: szef → z szefem; o + предложный: umowa → o umowie. Два падежа в одной фразе — типичная деловая конструкция."},
+{ru:"Я живу в Польше.",pl:"Mieszkam w Polsce.",acc:["[Ja] mieszkam w Polsce"],d:["Polska","Polskę","mieszkasz"],note:"Предложный после w: Polska → w Polsce (k → c!). Аналогично: Warszawa → w Warszawie; но Ukraina → na Ukrainie (с na)."},
+{ru:"Ты интересуешься продажами?",pl:"Interesujesz się sprzedażą?",acc:["[Czy] [ty] interesujesz się sprzedażą"],d:["sprzedaż","interesuję","sprzedaży"],note:"interesować się + творительный: sprzedaż → sprzedażą (женский род на согласный: + -ą). Не забудьте się."},
+{ru:"Встреча в ресторане.",pl:"Spotkanie jest w restauracji.",acc:["Spotkanie [jest] w restauracji"],d:["restauracja","restaurację","są"],note:"restauracja → w restauracji: у существительных на -ja, -ia предложный на -i. Ср. w kawiarni, w Hiszpanii. Связка jest сохраняется."},
+{ru:"Информация на сайте.",pl:"Informacja jest na stronie.",acc:["Informacja [jest] na stronie"],d:["strona","stronę","stroną"],note:"na + предложный (где?): strona → na stronie. Ср. na spotkaniu, na Ukrainie, na uczelni."},
+{ru:"Я (м.) доволен работой.",pl:"Jestem zadowolony z pracy.",acc:["[Ja] jestem zadowolony z pracy"],d:["zadowolona","pracą","praca"],note:"zadowolony z + родительный (а не творительный!): z pracy, z umowy. Женщина скажет zadowolona. Русское «доволен чем» здесь не работает."},
+{ru:"Мы в банке.",pl:"Jesteśmy w banku.",acc:["[My] jesteśmy w banku"],d:["bank","banka","jestem"],note:"Мужской род в предложном обычно -e с чередованием (sklep → w sklepie, Kraków → w Krakowie), но после k, g, ch, j и мягких согласных — -u: w banku, w domu, w hotelu, w kraju."},
+{ru:"Она едет с коллегой (ж.) на поезде.",pl:"Jedzie z koleżanką pociągiem.",acc:["[Ona] jedzie {z koleżanką pociągiem|pociągiem z koleżanką}"],d:["koleżanka","kolegą","pociąg"],note:"koleżanka → z koleżanką (-ą); pociąg → pociągiem (после k, g творительный -iem). Коллега-мужчина: kolega → z kolegą."}
+]});
+
+LESSONS.push({
+n:12, title:"Притяжательные и вежливые Pan / Pani / Państwo", sub:"moja wizytówka, Pana numer, Dziękuję Państwu",
+rule:`<p>Притяжательные местоимения согласуются с существительным в роде и числе. Только jego, jej, ich не изменяются никогда.</p>
+<table><tr><th></th><th>м.</th><th>ж.</th><th>ср.</th><th>мн. (мужчины)</th><th>мн. (остальные)</th></tr>
+<tr><th>мой</th><td>mój</td><td>moja</td><td>moje</td><td>moi</td><td>moje</td></tr>
+<tr><th>твой</th><td>twój</td><td>twoja</td><td>twoje</td><td>twoi</td><td>twoje</td></tr>
+<tr><th>наш</th><td>nasz</td><td>nasza</td><td>nasze</td><td>nasi</td><td>nasze</td></tr>
+<tr><th>ваш (на ты, мн.)</th><td>wasz</td><td>wasza</td><td>wasze</td><td>wasi</td><td>wasze</td></tr>
+<tr><th>его / её / их</th><td colspan="5">jego / jej / ich — не изменяются</td></tr>
+<tr><th>ваш (вежливо)</th><td colspan="5">Pana (к мужчине) / Pani (к женщине) / Państwa (к группе) — не изменяются</td></tr></table>
+<p>Вежливое «вы» — это существительное в 3-м лице: <b>Pan</b> (к мужчине), <b>Pani</b> (к женщине), <b>Państwo</b> (к группе, в т. ч. к супругам), а также Panowie (к нескольким мужчинам) и Panie (к нескольким женщинам). Глагол — как при «он / она» или «они»: Pan ma, Pani była, Państwo mają, Państwo byli.</p>
+<table><tr><th></th><th>к мужчине</th><th>к женщине</th><th>к группе</th></tr>
+<tr><th>кто? (им.)</th><td>Pan</td><td>Pani</td><td>Państwo</td></tr>
+<tr><th>кого? чей? (род.)</th><td>Pana</td><td>Pani</td><td>Państwa</td></tr>
+<tr><th>кому? (дат.)</th><td>Panu</td><td>Pani</td><td>Państwu</td></tr>
+<tr><th>кого? (вин.)</th><td>Pana</td><td>Panią</td><td>Państwa</td></tr>
+<tr><th>с кем? (твор.)</th><td>z Panem</td><td>z Panią</td><td>z Państwem</td></tr>
+<tr><th>о ком? (предл.)</th><td>o Panu</td><td>o Pani</td><td>o Państwu</td></tr>
+<tr><th>обращение</th><td>Panie Kowalski!</td><td>Pani Anno!</td><td>Proszę Państwa!</td></tr></table>
+<ul>
+<li>К клиенту, партнёру, чиновнику, незнакомому — только Pan / Pani. На «ты» переходят по предложению старшего или по взаимной договорённости.</li>
+<li>Формулы: Dzień dobry. Miło mi Pana / Panią poznać (рад познакомиться). Dziękuję Panu / Pani / Państwu. Przepraszam Panią (извините). Proszę Pana / Proszę Pani (обращение, чтобы привлечь внимание).</li>
+<li>В письмах Pan, Pani, Państwo и притяжательные Pana, Pani, Państwa пишутся с большой буквы.</li>
+<li>Обращение по фамилии или имени — звательный падеж: Panie Kowalski, Panie Marku, Pani Anno.</li>
+</ul>`,
+words:[["мой / моя / моё","mój / moja / moje"],["твой / твоя / твоё","twój / twoja / twoje"],["наш / наша / наше","nasz / nasza / nasze"],["ваш (мн., на ты)","wasz / wasza / wasze"],["его","jego"],["её","jej"],["их","ich"],["ваш (к мужчине)","Pana"],["ваш (к женщине)","Pani"],["ваш (к группе)","Państwa"],["вы (к мужчине)","Pan"],["вы (к группе)","Państwo"],["фамилия","nazwisko"],["имя","imię"],["визитка","wizytówka"],["место","miejsce"],["номер телефона","numer telefonu"],["извините","przepraszam"]],
+s:[
+{ru:"Это моя визитка.",pl:"To moja wizytówka.",acc:["To [jest] moja wizytówka"],d:["mój","moje","wizytówkę"],note:"moja — женский род (wizytówka). mój — мужской (mój telefon), moje — средний и мн. ч. не-мужчин (moje biuro, moje faktury)."},
+{ru:"Где твой телефон?",pl:"Gdzie jest twój telefon?",acc:["Gdzie [jest] twój telefon"],d:["twoja","twoje","telefonu"],note:"twój — мужской род. twoja umowa, twoje spotkanie. Множественное число: twoi klienci (мужчины) / twoje faktury."},
+{ru:"Наш офис в Варшаве.",pl:"Nasze biuro jest w Warszawie.",acc:["Nasze biuro [jest] w Warszawie"],d:["nasz","nasza","biura"],note:"biuro — средний род → nasze. nasz dom, nasza firma, nasze biuro. Мн. ч.: nasi klienci / nasze umowy."},
+{ru:"Это её проект, а не его.",pl:"To jej projekt, a nie jego.",acc:["To [jest] jej projekt a nie jego"],d:["ją","go","jemu"],note:"jego (его), jej (её), ich (их) — не изменяются ни по роду, ни по падежу: jej projekt, jej umowa, jej biuro, jej klienci."},
+{ru:"Какой у вас (Pan) номер телефона?",pl:"Jaki jest Pana numer telefonu?",acc:["Jaki [jest] Pana numer telefonu","Jaki ma Pan numer telefonu"],d:["Pani","Pan","twój"],note:"«Ваш» к мужчине = Pana (родительный от Pan), к женщине — Pani, к группе — Państwa: Pana numer, Pani numer, Państwa firma. Никогда не twój к клиенту!"},
+{ru:"Спасибо вам (Pani).",pl:"Dziękuję Pani.",acc:["Dziękuję Pani"],d:["Panią","Panu","Pana"],note:"dziękować + дательный: Dziękuję Pani (ж.), Dziękuję Panu (м.), Dziękuję Państwu (группе). У Pani дательный = Pani."},
+{ru:"Спасибо вам (Państwo) за встречу.",pl:"Dziękuję Państwu za spotkanie.",acc:["{Dziękuję|Dziękujemy} Państwu za spotkanie"],d:["Państwa","Państwo","spotkania"],note:"Państwo → дательный Państwu. za + винительный: za spotkanie. Если благодарит команда — Dziękujemy (тоже принимается)."},
+{ru:"Вы (Państwo) подписали договор?",pl:"Czy Państwo podpisali umowę?",acc:["[Czy] {Państwo podpisali|podpisali Państwo} umowę"],d:["podpisała","podpisaliście","umowy"],note:"Państwo + глагол в 3-м лице мн. ч. мужской формы: Państwo podpisali, Państwo mają, Państwo są. Не podpisaliście — это форма для «вы» на ты."},
+{ru:"Извините, это ваше (Pani) место?",pl:"Przepraszam, czy to Pani miejsce?",acc:["Przepraszam [czy] to [jest] Pani miejsce"],d:["Panią","Pana","twoje"],note:"Pani как притяжательное («ваше», к женщине) — та же форма Pani. «Извините» = przepraszam (буквально «прошу прощения»). miejsce — место."},
+{ru:"Господин Ковальский, у вас есть визитка?",pl:"Panie Kowalski, czy ma Pan wizytówkę?",acc:["Panie Kowalski [czy] {ma Pan|Pan ma} wizytówkę"],d:["Pana","Pani","wizytówka"],note:"Обращение — звательный падеж: Panie Kowalski! (Pan → Panie). Дальше глагол в 3-м лице: ma Pan. wizytówka → wizytówkę (винительный)."},
+{ru:"Как ваша (Pani) фамилия?",pl:"Jakie jest Pani nazwisko?",acc:["Jakie [jest] Pani nazwisko"],d:["jaki","jaka","Pana"],note:"nazwisko — средний род → jakie (jaki — м., jaka — ж., jakie — ср.). Pani nazwisko — «ваша фамилия» (к женщине)."},
+{ru:"Наши клиенты довольны.",pl:"Nasi klienci są zadowoleni.",acc:["Nasi klienci są zadowoleni"],d:["nasze","klientów","zadowolone"],note:"Мужчины во мн. ч.: nasi klienci są zadowoleni (окончание -i у всех трёх слов). Женщины или предметы: nasze klientki są zadowolone."}
+]});
+
+/* ===== Уроки 13–14: числительные, цены, время, даты; условное наклонение и просьбы ===== */
+LESSONS.push({
+n:13, title:"Числительные, цены, время, даты", sub:"dwie kawy, pięć złotych, o dziesiątej, piątego maja",
+rule:`<table><tr><th>1–10</th><th>11–19</th><th>десятки</th><th>сотни</th></tr>
+<tr><td>jeden / jedna / jedno<br>dwa / dwie<br>trzy<br>cztery<br>pięć<br>sześć<br>siedem<br>osiem<br>dziewięć<br>dziesięć</td>
+<td>jedenaście<br>dwanaście<br>trzynaście<br>czternaście<br>piętnaście<br>szesnaście<br>siedemnaście<br>osiemnaście<br>dziewiętnaście</td>
+<td>dwadzieścia<br>trzydzieści<br>czterdzieści<br>pięćdziesiąt<br>sześćdziesiąt<br>siedemdziesiąt<br>osiemdziesiąt<br>dziewięćdziesiąt</td>
+<td>sto<br>dwieście<br>trzysta<br>czterysta<br>pięćset … dziewięćset<br>tysiąc<br>dwa tysiące<br>pięć tysięcy</td></tr></table>
+<p>Главное правило согласования — по последнему слову числительного:</p>
+<table><tr><th>Число</th><th>Существительное</th><th>Пример</th></tr>
+<tr><td>1</td><td>ед. ч.</td><td>jeden złoty, jedna kawa, jedno piwo</td></tr>
+<tr><td>2, 3, 4 (и 22, 23, 24…)</td><td>им. п. мн. ч.</td><td>dwa złote, dwie kawy, trzy piwa, cztery osoby</td></tr>
+<tr><td>5–21, 25–31… и 12, 13, 14</td><td>род. п. мн. ч., глагол в ед. ч. ср. р.</td><td>pięć złotych, dziesięć osób czeka, dwanaście kaw</td></tr></table>
+<ul>
+<li>dwa — мужской и средний род, dwie — женский. Для группы мужчин: dwóch / trzech / pięciu klientów (родительный).</li>
+<li>Деньги: 1 złoty / 2–4 złote / 5+ złotych; 1 grosz / 2–4 grosze / 5+ groszy. Цену говорят коротко: cztery pięćdziesiąt (4,50).</li>
+<li>procent после числительного не изменяется: dziesięć procent.</li>
+<li>Время: Która (jest) godzina? — Jest pierwsza / druga / trzecia … (порядковые в женском роде). «Во сколько?» — O której? — O trzeciej (o + предложный). Половина: wpół do czwartej = 3:30 (до следующего часа!). Четверть: kwadrans po trzeciej (3:15), za kwadrans czwarta (3:45).</li>
+<li>Даты: которого числа? — piątego maja, dwudziestego czerwca (родительный порядкового + родительный месяца). Месяцы в родительном: stycznia, lutego, marca, kwietnia, maja, czerwca, lipca, sierpnia, września, października, listopada, grudnia.</li>
+</ul>`,
+words:[["один / одна / одно","jeden / jedna / jedno"],["два / две","dwa / dwie"],["три","trzy"],["четыре","cztery"],["пять","pięć"],["десять","dziesięć"],["двадцать","dwadzieścia"],["пятьдесят","pięćdziesiąt"],["сто","sto"],["тысяча","tysiąc"],["злотый","złoty"],["грош","grosz"],["процент","procent"],["скидка","rabat"],["человек, персона","osoba"],["билет","bilet"],["который час?","która godzina?"],["половина (третьего)","wpół do (trzeciej)"],["в месяц","miesięcznie"],["минута","minuta"]],
+s:[
+{ru:"Это стоит двадцать злотых.",pl:"To kosztuje dwadzieścia złotych.",acc:["To kosztuje dwadzieścia złotych"],d:["złote","złoty","kosztują"],t:["num","money"],note:"После 5 и больше (в том числе 20, 30, 100) — родительный мн. ч.: złotych, groszy, osób. Схема: 1 złoty, 2–4 złote, 5+ złotych; 22–24 → złote (последняя цифра 2–4, кроме 12–14)."},
+{ru:"Два кофе, пожалуйста.",pl:"Dwie kawy poproszę.",acc:["{Dwie kawy poproszę|Poproszę dwie kawy}"],d:["dwa","kawę","kawa"],t:["num","request"],note:"dwa — мужской и средний род (dwa telefony, dwa biura), dwie — женский (dwie kawy, dwie umowy). После 2–4 — именительный мн. ч.: kawy."},
+{ru:"У меня сегодня три встречи.",pl:"Mam dzisiaj trzy spotkania.",acc:["[Ja] {mam {dzisiaj|dziś} trzy spotkania|mam trzy spotkania {dzisiaj|dziś}|{dzisiaj|dziś} mam trzy spotkania}"],d:["trzech","spotkań","spotkanie"],t:["num"],note:"trzy spotkania — после 2–4 именительный мн. ч. (spotkanie → spotkania). trzech — для мужчин (trzech klientów) и в родительном падеже; spotkań — родительный мн. ч. (после 5+: pięć spotkań)."},
+{ru:"Пять человек ждут.",pl:"Pięć osób czeka.",acc:["Pięć osób czeka"],d:["osoby","czekają","pięciu"],t:["num"],note:"После 5+ существительное в родительном мн. ч. (osoba → osób), а глагол в 3-м лице ед. ч.: pięć osób czeka. В прошедшем — средний род: pięć osób czekało."},
+{ru:"Который час?",pl:"Która jest godzina?",acc:["Która [jest] godzina","Która godzina jest"],d:["który","godziny","ile"],t:["time","qword"],note:"Która (jest) godzina? — буквально «которая час», godzina — женский род. Ответ: Jest trzecia (три часа), Jest wpół do czwartej (полчетвёртого)."},
+{ru:"Сейчас половина третьего.",pl:"Jest wpół do trzeciej.",acc:["[Teraz] jest wpół do trzeciej","Jest [teraz] wpół do trzeciej"],d:["trzecia","trzy","pół"],t:["time"],note:"wpół do + родительный порядкового от следующего часа: wpół do trzeciej = 2:30. Устроено как русское «половина третьего»."},
+{ru:"Встреча в десять.",pl:"Spotkanie jest o dziesiątej.",acc:["Spotkanie [jest] o dziesiątej","O dziesiątej [jest] spotkanie"],d:["dziesięć","dziesiąta","godzinie"],t:["time"],note:"o + предложный порядкового: o dziesiątej, o piątej, o pierwszej (полностью — o dziesiątej godzinie). Количественное dziesięć здесь не подходит."},
+{ru:"Я плачу сто злотых картой.",pl:"Płacę sto złotych kartą.",acc:["[Ja] płacę sto złotych kartą","[Ja] płacę kartą sto złotych"],d:["złote","płacisz","kartę"],t:["num","money","instr"],note:"sto — после него родительный мн. ч.: sto złotych, sto osób. kartą — творительный (чем плачу)."},
+{ru:"Это стоит четыре злотых пятьдесят грошей.",pl:"To kosztuje cztery złote pięćdziesiąt groszy.",acc:["To kosztuje cztery złote [i] pięćdziesiąt groszy"],d:["złotych","grosze","czterech"],t:["num","money"],note:"4 złote (2–4 — им. п. мн. ч.), 50 groszy (5+ — род. п. мн. ч.). В речи цену часто сокращают: cztery pięćdziesiąt."},
+{ru:"Во вторник, пятого мая.",pl:"We wtorek, piątego maja.",acc:["We wtorek piątego maja"],d:["piąty","maj","wtorku"],t:["time"],note:"Даты — родительный порядкового + родительный месяца: piątego maja, dwudziestego czerwca. Вопрос: Którego (числа)? we wtorek — «во вторник» (we перед wt-)."},
+{ru:"Скидка — десять процентов.",pl:"Rabat to dziesięć procent.",acc:["Rabat to dziesięć procent","Rabat wynosi dziesięć procent"],d:["procentów","procenty","dziesiąty"],t:["num","money"],note:"procent после числительных не изменяется: pięć procent, dziesięć procent. rabat — скидка; wynosić — «составлять» (о сумме)."},
+{ru:"Сколько это будет стоить в месяц?",pl:"Ile to będzie kosztować miesięcznie?",acc:["Ile to będzie {kosztować|kosztowało} miesięcznie","Ile to będzie {kosztować|kosztowało} na miesiąc"],d:["miesiąc","kosztuje","będą"],t:["money","future","qword"],note:"«В месяц» — наречие miesięcznie (или na miesiąc). Будущее: będzie kosztować / będzie kosztowało (средний род, потому что подлежащее — to)."},
+{ru:"Один билет, пожалуйста.",pl:"Jeden bilet poproszę.",acc:["{Jeden bilet poproszę|Poproszę jeden bilet}"],d:["jedna","jedno","biletu"],t:["num","request"],note:"jeden — мужской род (jeden bilet), jedna — женский (jedna kawa), jedno — средний (jedno piwo). Poproszę + винительный — «будьте добры, дайте»."}
+]});
+
+LESSONS.push({
+n:14, title:"Условное наклонение и вежливые просьбы", sub:"chciałbym, czy mógłby Pan, poproszę, proszę poczekać",
+rule:`<p>Условное наклонение = форма прошедшего времени + частица -by- + личное окончание. Это главный инструмент вежливости: <b>chciałbym</b> («я хотел бы») звучит мягче, чем chcę, а <b>czy mógłby Pan</b> — мягче, чем czy może Pan.</p>
+<table><tr><th></th><th>мужской</th><th>женский</th></tr>
+<tr><th>ja</th><td>chciałbym</td><td>chciałabym</td></tr>
+<tr><th>ty</th><td>chciałbyś</td><td>chciałabyś</td></tr>
+<tr><th>on / ona / Pan / Pani</th><td>chciałby</td><td>chciałaby</td></tr>
+<tr><th>my</th><td>chcielibyśmy</td><td>chciałybyśmy</td></tr>
+<tr><th>wy</th><td>chcielibyście</td><td>chciałybyście</td></tr>
+<tr><th>oni / one / Państwo</th><td>chcieliby</td><td>chciałyby</td></tr></table>
+<p>Так же: móc → mógłbym / mogłabym, mógłby Pan / mogłaby Pani; woleć → wolałbym / wolałabym; być → byłbym / byłabym, byłoby (безлично: «было бы»).</p>
+<table><tr><th>Прямо</th><th>Вежливо</th><th>Очень вежливо</th></tr>
+<tr><td>Chcę kawę.</td><td>Chciałbym kawę.</td><td>Poproszę kawę.</td></tr>
+<tr><td>Może Pan powtórzyć?</td><td>Czy może Pan powtórzyć?</td><td>Czy mógłby Pan powtórzyć?</td></tr>
+<tr><td>Czekaj!</td><td>Proszę poczekać.</td><td>Czy mógłby Pan chwilę poczekać?</td></tr></table>
+<ul>
+<li>proszę + инфинитив — универсальная вежливая инструкция без «вы» и без повелительного наклонения: proszę usiąść, proszę wejść, proszę wypełnić formularz.</li>
+<li>Ударение в условном наклонении не сдвигается на -by-: CHCIAłbym, chcieLIbyśmy (частица не считается слогом для ударения).</li>
+<li>gdyby («если бы») принимает личное окончание: gdybym, gdybyś, gdyby, gdybyśmy, gdybyście, gdyby — а глагол стоит в форме прошедшего: Gdybym miał czas, zadzwoniłbym.</li>
+<li>Частица -by- может уходить от глагола к союзу: Chciałbym, żebyś zadzwonił (żeby + -ś).</li>
+</ul>`,
+words:[["хотел бы / хотела бы","chciałbym / chciałabym"],["не могли бы вы (к мужчине)","czy mógłby Pan"],["не могли бы вы (к женщине)","czy mogłaby Pani"],["будьте добры, дайте","poproszę"],["пожалуйста, подождите","proszę poczekać"],["предпочёл бы / предпочла бы","wolałbym / wolałabym"],["было бы","byłoby"],["если бы","gdyby"],["сесть","usiąść"],["войти","wejść"],["подождать","poczekać"],["продлить","przedłużyć"],["изменить","zmienić"],["спросить","zapytać"],["помочь","pomóc"],["встретиться","spotkać się"],["счёт (в ресторане)","rachunek"],["мне (кому?)","mi / mnie"]],
+s:[
+{ru:"Я (м.) хотел бы заплатить картой.",pl:"Chciałbym zapłacić kartą.",acc:["[Ja] chciałbym zapłacić kartą"],d:["chciałabym","chcę","chciałby"],t:["cond","request","instr"],note:"Условное наклонение = форма прошедшего + -by- + личное окончание: chciał-by-m (м.), chciała-by-m (ж.). Самая вежливая форма «хочу»."},
+{ru:"Я (ж.) хотела бы кофе.",pl:"Chciałabym kawę.",acc:["[Ja] chciałabym {kawę|kawy}"],d:["chciałbym","chciałaby","kawa"],t:["cond","acc"],note:"Женщина говорит chciałabym (chciała + by + m). После chcieć — винительный kawę (или родительный kawy — «немного кофе»)."},
+{ru:"Не могли бы вы (Pan) повторить?",pl:"Czy mógłby Pan powtórzyć?",acc:["[Czy] {mógłby Pan|Pan mógłby} powtórzyć"],d:["mogłaby","może","mógł"],t:["cond","request","pan"],note:"Czy mógłby Pan…? (к мужчине) / Czy mogłaby Pani…? (к женщине) — вежливее, чем Czy może Pan. Форма: mógł + by, без личного окончания, потому что Pan — 3-е лицо."},
+{ru:"Не могли бы вы (Pani) мне помочь?",pl:"Czy mogłaby Pani mi pomóc?",acc:["[Czy] {mogłaby Pani mi pomóc|mogłaby mi Pani pomóc|mogłaby Pani pomóc mi}"],d:["mógłby","mnie","pomagać"],t:["cond","request","pan","dat"],note:"pomóc + дательный: mi («мне», безударная форма; mnie — под ударением). mogłaby — женский род."},
+{ru:"Мы (м.) хотели бы продлить договор.",pl:"Chcielibyśmy przedłużyć umowę.",acc:["[My] chcielibyśmy przedłużyć umowę"],d:["chciałybyśmy","chcemy","umowy"],t:["cond","acc"],note:"Мн. ч. мужская форма: chcieli-by-śmy; только женщины: chciały-by-śmy. przedłużyć umowę — продлить договор (винительный)."},
+{ru:"Я (м.) предпочёл бы встречу утром.",pl:"Wolałbym spotkanie rano.",acc:["[Ja] wolałbym spotkanie rano","[Ja] wolałbym rano spotkanie"],d:["wolałabym","wolę","spotkania"],t:["cond","acc"],note:"woleć → wolałbym / wolałabym — «предпочёл бы». Ср. wolę — «предпочитаю» (настоящее). spotkanie — винительный = именительный."},
+{ru:"Было бы хорошо встретиться в пятницу.",pl:"Byłoby dobrze spotkać się w piątek.",acc:["Byłoby dobrze {spotkać się|się spotkać} w piątek","Dobrze byłoby {spotkać się|się spotkać} w piątek"],d:["było","dobry","spotkamy"],t:["cond","time"],note:"byłoby — «было бы» (средний род, безличный оборот); dobrze — наречие «хорошо». spotkać się — встретиться; się может стоять до или после инфинитива."},
+{ru:"Пожалуйста, подождите. (Pan)",pl:"Proszę poczekać.",acc:["Proszę {poczekać|czekać}"],d:["czekam","poczekaj","poczekamy"],t:["request"],note:"Вежливая просьба = proszę + инфинитив: proszę poczekać, proszę usiąść, proszę wejść. Без «вы» и без повелительного наклонения — универсально к Pan / Pani. poczekaj — только на ты."},
+{ru:"Пожалуйста, садитесь.",pl:"Proszę usiąść.",acc:["Proszę usiąść"],d:["siedzieć","usiądź","siadam"],t:["request"],note:"usiąść — сесть (сов. вид); siedzieć — сидеть. Proszę usiąść — «садитесь, пожалуйста». Друзьям: usiądź / siadaj."},
+{ru:"Можно спросить?",pl:"Czy mogę zapytać?",acc:["[Czy] {mogę|mógłbym|mogłabym} zapytać"],d:["może","pytać","możesz"],t:["modal","request"],note:"Czy mogę zapytać? — «можно спросить?»; ещё вежливее — mógłbym / mogłabym zapytać. zapytać — спросить (сов.), pytać — спрашивать."},
+{ru:"Если бы у меня (м.) было время, я бы позвонил.",pl:"Gdybym miał czas, zadzwoniłbym.",acc:["Gdybym miał czas zadzwoniłbym","Zadzwoniłbym gdybym miał czas"],d:["gdyby","miałem","zadzwonię"],t:["cond"],note:"gdyby принимает личное окончание: gdybym, gdybyś, gdyby, gdybyśmy… За ним — форма прошедшего без окончания (miał, не miałem). В главной части — тоже условное: zadzwoniłbym."},
+{ru:"Дайте, пожалуйста, счёт. (в ресторане)",pl:"Poproszę rachunek.",acc:["Poproszę [o] rachunek","Proszę o rachunek"],d:["faktura","rachunku","proszą"],t:["request","acc","vocab"],note:"rachunek — счёт в ресторане или кафе; faktura — счёт-фактура для фирмы. Poproszę + винительный — «будьте добры, дайте»."},
+{ru:"Я (ж.) хотела бы изменить дату встречи.",pl:"Chciałabym zmienić termin spotkania.",acc:["[Ja] chciałabym zmienić termin spotkania"],d:["chciałbym","zmieniać","spotkanie"],t:["cond","gen"],note:"termin spotkania — дата / срок встречи (spotkania — родительный: срок чего?). zmienić — изменить (сов.), zmieniać — менять (несов.)."}
+]});
+
+/* ===== Ситуативные модули ===== */
+LESSONS.push({
+id:"shop", kind:"situation", n:"🛒", short:"Магазин", title:"Магазин и касса", sub:"Poproszę…, Ile płacę?, Paragon czy faktura?",
+rule:`<p>Готовые формулы для магазина. Грамматика та же, что в уроках 1–14; здесь важно узнавать вопросы кассира и отвечать без пауз.</p>
+<table><tr><th>Кассир или продавец</th><th>Что это значит</th><th>Ответ</th></tr>
+<tr><td>Czy mogę w czymś pomóc?</td><td>Вам помочь?</td><td>Tylko oglądam, dziękuję. / Szukam…</td></tr>
+<tr><td>Kartą czy gotówką?</td><td>Картой или наличными?</td><td>Kartą. / Gotówką.</td></tr>
+<tr><td>Paragon czy faktura?</td><td>Чек или счёт-фактура?</td><td>Paragon poproszę. / Bez paragonu.</td></tr>
+<tr><td>Czy potrzebuje Pan torbę / reklamówkę?</td><td>Пакет нужен?</td><td>Tak, poproszę. / Nie, dziękuję.</td></tr>
+<tr><td>Ma Pani kartę klienta?</td><td>Есть карта клиента?</td><td>Nie mam. / Tak, proszę.</td></tr>
+<tr><td>Ma Pan drobne?</td><td>Есть мелочь?</td><td>Niestety nie mam.</td></tr>
+<tr><td>Coś jeszcze?</td><td>Что-нибудь ещё?</td><td>Nie, to wszystko.</td></tr></table>
+<ul>
+<li>Количество на развес — родительный: pół kilo szynki, kilo jabłek, dwadzieścia deko sera (deko = 10 г, так говорят у прилавка).</li>
+<li>Сравнительная степень: większy / mniejszy (больше / меньше), tańszy / droższy (дешевле / дороже), inny (другой).</li>
+<li>«По акции» — w promocji; уценка — przecena; распродажа — wyprzedaż.</li>
+<li>Приветствие в магазине — Dzień dobry, прощание — Do widzenia. Cześć — только со знакомыми.</li>
+</ul>`,
+words:[["касса","kasa"],["чек","paragon"],["пакет","reklamówka / torba"],["наличные","gotówka"],["сдача","reszta"],["акция","promocja"],["размер","rozmiar"],["примерочная","przymierzalnia"],["возврат","zwrot"],["очередь","kolejka"],["хлеб","chleb"],["сыр","ser"],["ветчина","szynka"],["пиво","piwo"],["мелочь","drobne"],["свежий","świeży"],["всего, итого","razem"],["хорошего дня","miłego dnia"]],
+s:[
+{ru:"Здравствуйте, где хлеб?",pl:"Dzień dobry, gdzie jest chleb?",acc:["Dzień dobry gdzie [jest] chleb"],d:["chleba","cześć","są"],t:["vocab","qword"],note:"Dzień dobry — универсальное приветствие в магазине (не cześć). chleb — хлеб; родительный chleba: nie ma chleba."},
+{ru:"Сколько стоит этот сыр?",pl:"Ile kosztuje ten ser?",acc:["Ile kosztuje ten ser","Ile ten ser kosztuje"],d:["tę","sera","kosztują"],t:["money","adj"],note:"ser — мужской род: ten ser (винительный = именительный). tę — только для женского рода (tę kawę)."},
+{ru:"Дайте, пожалуйста, полкило ветчины.",pl:"Poproszę pół kilo szynki.",acc:["Poproszę pół kilo szynki","Proszę o pół kilo szynki"],d:["szynka","kilogram","szynkę"],t:["gen","request"],note:"Количество + родительный: pół kilo szynki, kilo jabłek, dwadzieścia deko sera. Слово kilo не склоняется."},
+{ru:"Вы (Pan) платите картой или наличными?",pl:"Płaci Pan kartą czy gotówką?",acc:["[Czy] {płaci Pan|Pan płaci} kartą czy gotówką"],d:["płacisz","karta","gotówka"],t:["instr","pan"],note:"kartą / gotówką — творительный (чем платите?). Так спросит кассир; ответ одним словом: Kartą."},
+{ru:"Мне нужен пакет.",pl:"Potrzebuję reklamówki.",acc:["[Ja] potrzebuję {reklamówki|torby}","Poproszę {reklamówkę|torbę}"],d:["reklamówka","torba","potrzebuje"],t:["gen","vocab"],note:"potrzebować + родительный: reklamówki / torby. На кассе проще сказать Poproszę reklamówkę (винительный). reklamówka — тонкий пакет, torba — сумка или плотный пакет."},
+{ru:"Чек, пожалуйста.",pl:"Paragon poproszę.",acc:["{Paragon poproszę|Poproszę paragon}"],d:["paragonu","faktura","proszę"],t:["request","vocab"],note:"paragon — кассовый чек. Кассир часто спрашивает: Paragon czy faktura? Если чек не нужен: Bez paragonu, dziękuję."},
+{ru:"Это по акции?",pl:"Czy to jest w promocji?",acc:["[Czy] to [jest] w promocji"],d:["promocja","promocję","na"],t:["loc","vocab"],note:"w promocji — «по акции» (предложный: promocja → promocji). Уценка — przecena, распродажа — wyprzedaż."},
+{ru:"Есть размер побольше?",pl:"Czy jest większy rozmiar?",acc:["[Czy] jest {większy rozmiar|rozmiar większy}"],d:["duży","rozmiaru","mniejszy"],t:["adj","czy"],note:"większy — сравнительная степень от duży (mniejszy — от mały). Ср. Czy jest mniejszy? — Есть поменьше?"},
+{ru:"Где примерочная?",pl:"Gdzie jest przymierzalnia?",acc:["Gdzie [jest] przymierzalnia"],d:["przymierzalni","przymierzać","są"],t:["qword","vocab"],note:"przymierzalnia — примерочная; przymierzyć — примерить: Czy mogę przymierzyć?"},
+{ru:"Я хочу вернуть этот товар.",pl:"Chcę zwrócić ten produkt.",acc:["[Ja] {chcę|chciałbym|chciałabym} zwrócić ten {produkt|towar}"],d:["zwrot","tego","produktu"],t:["acc","vocab"],note:"zwrócić — вернуть (сов.), zwrot — возврат. Вежливее: Chciałbym zwrócić. В интернет-магазине возврат без причины — 14 дней по закону, в обычном магазине — по правилам магазина."},
+{ru:"Я (ж.) получила неверную сдачу.",pl:"Dostałam złą resztę.",acc:["[Ja] dostałam {złą|niewłaściwą} resztę"],d:["dostałem","reszta","zła"],t:["past","acc","adj"],note:"reszta — сдача; zła reszta → винительный złą resztę. Вежливо: Przepraszam, chyba dostałam złą resztę."},
+{ru:"Есть это в другом цвете?",pl:"Czy jest to w innym kolorze?",acc:["[Czy] {jest to|to jest} w innym kolorze"],d:["kolor","inny","kolorem"],t:["loc","adj"],note:"w innym kolorze — предложный: inny kolor → w innym kolorze. Цвета: czarny, biały, czerwony, niebieski, zielony, szary."},
+{ru:"Это свежее?",pl:"Czy to jest świeże?",acc:["[Czy] to [jest] świeże"],d:["świeży","świeża","świeżo"],t:["adj"],note:"świeże — средний род (to). О хлебе: Czy chleb jest świeży? О рыбе: Czy ryba jest świeża?"},
+{ru:"Где касса?",pl:"Gdzie jest kasa?",acc:["Gdzie [jest] kasa"],d:["kasy","kasą","są"],t:["qword","vocab"],note:"kasa — касса; kasa samoobsługowa — самообслуживание. Встать в очередь — stanąć w kolejce."},
+{ru:"Дайте, пожалуйста, два пива.",pl:"Poproszę dwa piwa.",acc:["{Poproszę dwa piwa|Dwa piwa poproszę}"],d:["dwie","piwo","piw"],t:["num","request"],note:"piwo — средний род → dwa piwa (2–4 + им. мн. ч.); pięć piw (5+ — род. мн. ч.)."},
+{ru:"У меня нет мелочи.",pl:"Nie mam drobnych.",acc:["[Ja] nie mam drobnych"],d:["drobne","reszty","masz"],t:["nie-gen","vocab"],note:"drobne — мелочь (только мн. ч.); после nie — родительный drobnych. Вопрос кассира: Ma Pan drobne?"},
+{ru:"У вас (Pani) есть карта клиента?",pl:"Ma Pani kartę klienta?",acc:["[Czy] {ma Pani|Pani ma} kartę {klienta|lojalnościową}"],d:["karta","klient","masz"],t:["pan","acc"],note:"karta klienta / karta lojalnościowa — карта лояльности; kartę — винительный, klienta — родительный (карта кого?)."},
+{ru:"Я только смотрю, спасибо.",pl:"Tylko oglądam, dziękuję.",acc:["[Ja] tylko oglądam dziękuję","Tylko oglądam"],d:["patrzę","oglądać","dzięki"],t:["vocab","conj-am"],note:"Ответ продавцу на Czy mogę w czymś pomóc? — Tylko oglądam («просто смотрю»). oglądać — рассматривать; patrzeć — смотреть (на что-то)."},
+{ru:"Сколько с меня?",pl:"Ile płacę?",acc:["Ile płacę","Ile to razem"],d:["płacić","płacisz","kosztuję"],t:["money","vocab"],note:"Ile płacę? — «сколько с меня» (буквально «сколько плачу»). Итого: razem — Ile to razem?"},
+{ru:"До свидания, хорошего дня!",pl:"Do widzenia, miłego dnia!",acc:["Do widzenia miłego dnia"],d:["dobrego","dzień","cześć"],t:["vocab","gen"],note:"miłego dnia — «хорошего дня»: пожелание стоит в родительном (życzę miłego dnia). Ср. wszystkiego dobrego — всего доброго."}
+]});
+
+LESSONS.push({
+id:"home", kind:"situation", n:"🏠", short:"Дом", title:"Дом, хозяйка квартиры, соседи", sub:"czynsz, kaucja, nie działa ogrzewanie, cieknie kran",
+rule:`<p>Словарь аренды и быта. Большинство разговоров с хозяином (właściciel / właścicielka) идут в формах Pan / Pani и с условным наклонением (chciałbym…).</p>
+<table><tr><th>Польский</th><th>Русский</th></tr>
+<tr><td>umowa najmu</td><td>договор аренды</td></tr>
+<tr><td>czynsz</td><td>плата за аренду (иногда включает opłaty administracyjne)</td></tr>
+<tr><td>kaucja</td><td>залог; zwrot kaucji — возврат залога</td></tr>
+<tr><td>media, rachunki, opłaty</td><td>коммунальные, счета, платежи</td></tr>
+<tr><td>licznik, odczyt / stan licznika</td><td>счётчик, показания</td></tr>
+<tr><td>okres wypowiedzenia</td><td>срок уведомления о расторжении</td></tr>
+<tr><td>wprowadzić się / wyprowadzić się</td><td>въехать / съехать</td></tr>
+<tr><td>klatka schodowa, domofon, winda</td><td>подъезд, домофон, лифт</td></tr>
+<tr><td>awaria, usterka</td><td>авария, неисправность</td></tr></table>
+<ul>
+<li>nie działa — «не работает» о технике (pracować — только о людях).</li>
+<li>w sprawie + родительный — «по поводу»: dzwonię w sprawie mieszkania.</li>
+<li>Сортировка мусора: papier, plastik (metale i tworzywa), szkło, bio, zmieszane.</li>
+<li>Соседям: Dzień dobry — обязательно, даже незнакомым в подъезде. Извиниться за шум: Przepraszam za hałas.</li>
+</ul>`,
+words:[["квартира","mieszkanie"],["плата за аренду","czynsz"],["залог","kaucja"],["договор аренды","umowa najmu"],["хозяин / хозяйка","właściciel / właścicielka"],["коммунальные услуги","media"],["счета","rachunki"],["счётчик","licznik"],["отопление","ogrzewanie"],["кран","kran"],["течёт","cieknie"],["не работает","nie działa"],["починить","naprawić"],["ключ","klucz"],["сосед / соседка","sąsiad / sąsiadka"],["мусор","śmieci"],["уведомление о расторжении","wypowiedzenie"],["перевод (денег)","przelew"]],
+s:[
+{ru:"Здравствуйте, я звоню по поводу квартиры.",pl:"Dzień dobry, dzwonię w sprawie mieszkania.",acc:["Dzień dobry dzwonię w sprawie mieszkania"],d:["mieszkanie","dzwonić","sprawa"],t:["gen","vocab"],note:"w sprawie + родительный — «по поводу»: w sprawie mieszkania, w sprawie umowy. Стандартное начало телефонного разговора."},
+{ru:"Сколько составляет аренда в месяц?",pl:"Ile wynosi czynsz miesięcznie?",acc:["Ile {wynosi|kosztuje} czynsz {miesięcznie|na miesiąc}"],d:["czynszu","miesiąc","wynoszą"],t:["money","vocab"],note:"czynsz — плата за аренду; wynosić — «составлять» (о сумме): czynsz wynosi 3000 zł. Коммунальные — media, opłaty."},
+{ru:"Залог — это одна месячная плата?",pl:"Kaucja to jeden czynsz?",acc:["[Czy] kaucja to [jest] jeden czynsz"],d:["kaucję","jedna","czynszu"],t:["num","vocab"],note:"kaucja — залог; обычно равен одной-двум месячным платам. Возврат залога — zwrot kaucji."},
+{ru:"Коммунальные включены?",pl:"Czy media są wliczone?",acc:["[Czy] {media|rachunki|opłaty} są {wliczone|w cenie}"],d:["wliczony","jest","medium"],t:["adj","vocab"],note:"media — коммунальные услуги (свет, газ, вода, интернет), только мн. ч. → są wliczone («включены»); в цене — w cenie."},
+{ru:"Я (м.) хотел бы подписать договор на год.",pl:"Chciałbym podpisać umowę na rok.",acc:["[Ja] chciałbym podpisać umowę na rok"],d:["chciałabym","roku","umowy"],t:["cond","acc"],note:"umowa najmu — договор аренды; na rok — на год (na + винительный, rok не меняется). Ср. na dwa lata, na pół roku."},
+{ru:"Не работает отопление.",pl:"Nie działa ogrzewanie.",acc:["Nie działa ogrzewanie","Ogrzewanie nie działa"],d:["ogrzewania","pracuje","działają"],t:["vocab","nie-gen"],note:"nie działa — «не работает» (о технике). Не pracuje: pracować — только о людях. ogrzewanie — отопление."},
+{ru:"На кухне течёт кран.",pl:"W kuchni cieknie kran.",acc:["W kuchni cieknie kran","Kran w kuchni cieknie","Cieknie kran w kuchni"],d:["kuchnia","kranu","ciecze"],t:["loc","vocab"],note:"cieknie — течёт, капает; w kuchni — предложный от kuchnia. В ванной — w łazience."},
+{ru:"Можете (Pani) прислать кого-нибудь для ремонта?",pl:"Czy może Pani kogoś przysłać do naprawy?",acc:["[Czy] {może Pani|Pani może} {kogoś przysłać|przysłać kogoś} do naprawy"],d:["ktoś","naprawa","możesz"],t:["modal","pan","gen"],note:"kogoś — «кого-нибудь» (винительный от ktoś); do naprawy — «для ремонта» (do + родительный). naprawić — починить."},
+{ru:"Я оплачу переводом до десятого.",pl:"Zapłacę przelewem do dziesiątego.",acc:["[Ja] zapłacę przelewem do dziesiątego"],d:["przelew","dziesiąty","płacę"],t:["perf","instr","time"],note:"przelewem — творительный (чем плачу); do dziesiątego — «до десятого числа» (do + родительный порядкового)."},
+{ru:"Когда вы (Pan) вернёте залог?",pl:"Kiedy zwróci Pan kaucję?",acc:["Kiedy {zwróci Pan|Pan zwróci} kaucję"],d:["zwrócisz","kaucja","zwrot"],t:["perf","pan","acc"],note:"zwrócić — вернуть (сов., как будущее: zwróci); Pan + 3-е лицо; kaucję — винительный."},
+{ru:"Я (м.) потерял ключи.",pl:"Zgubiłem klucze.",acc:["[Ja] zgubiłem klucze"],d:["zgubiłam","kluczy","klucz"],t:["past","acc"],note:"zgubić — потерять (вещь): zgubiłem (м.) / zgubiłam (ж.). klucze — мн. ч. от klucz; после nie — родительный: nie mam kluczy."},
+{ru:"Домофон не работает.",pl:"Domofon nie działa.",acc:["Domofon nie działa","Nie działa domofon"],d:["domofonu","pracuje","działają"],t:["vocab"],note:"domofon — домофон; kod do klatki — код подъезда; winda — лифт."},
+{ru:"Куда выносить мусор?",pl:"Gdzie wyrzucać śmieci?",acc:["Gdzie {wyrzucać|wyrzucić} śmieci","Gdzie wyrzuca się śmieci"],d:["śmieć","wyrzucam","dokąd"],t:["vocab","qword"],note:"śmieci — мусор (мн. ч.); wyrzucać śmieci — выносить мусор (буквально «выбрасывать»). Сортировка: papier, plastik, szkło, bio, zmieszane."},
+{ru:"Соседи шумят по ночам.",pl:"Sąsiedzi hałasują w nocy.",acc:["Sąsiedzi hałasują {w nocy|nocą}","{W nocy|Nocą} sąsiedzi hałasują"],d:["sąsiad","hałas","hałasuje"],t:["vocab","conj-esz"],note:"sąsiad → мн. ч. sąsiedzi (мужская форма с чередованием a → e); hałasować → hałasują — шумят; w nocy / nocą — ночью."},
+{ru:"Можно держать кота?",pl:"Czy można mieć kota?",acc:["[Czy] można {mieć|trzymać} kota"],d:["kot","koty","mogę"],t:["modal","acc"],note:"kot — одушевлённый: винительный kota. О собаке: Czy można mieć psa? (pies → psa)."},
+{ru:"Я (м.) хотел бы расторгнуть договор.",pl:"Chciałbym wypowiedzieć umowę.",acc:["[Ja] chciałbym wypowiedzieć umowę"],d:["wypowiedzenie","chciałabym","umowy"],t:["cond","acc","vocab"],note:"wypowiedzieć umowę — расторгнуть (уведомить о расторжении); wypowiedzenie — само уведомление; okres wypowiedzenia — срок уведомления, прописан в договоре."},
+{ru:"Я пришлю показания счётчика.",pl:"Prześlę odczyt licznika.",acc:["[Ja] prześlę {odczyt|stan} licznika"],d:["licznik","przesyłam","odczytu"],t:["perf","gen"],note:"odczyt / stan licznika — показания счётчика (licznik → родительный licznika). przesłać → prześlę — перешлю (сов.); przesyłam — пересылаю (сейчас)."},
+{ru:"Квартира мне подходит.",pl:"Mieszkanie mi odpowiada.",acc:["[To] mieszkanie mi odpowiada"],d:["mnie","odpowiedź","odpowiadam"],t:["dat","vocab"],note:"odpowiadać komuś — «подходить кому-то»; mi — дательный «мне». Второе значение odpowiadać — отвечать."},
+{ru:"Когда я могу въехать?",pl:"Kiedy mogę się wprowadzić?",acc:["Kiedy {mogę się wprowadzić|się mogę wprowadzić|mogę wprowadzić się}"],d:["wyprowadzić","wprowadzam","może"],t:["modal","vocab"],note:"wprowadzić się — въехать; wyprowadzić się — съехать. Частица się — перед инфинитивом или после него."},
+{ru:"Спасибо, до встречи в субботу.",pl:"Dziękuję, do zobaczenia w sobotę.",acc:["Dziękuję do zobaczenia w sobotę"],d:["widzenia","sobota","zobaczyć"],t:["vocab","time"],note:"do zobaczenia — «до встречи, увидимся» (легче, чем официальное do widzenia); w sobotę — в субботу."}
+]});
+
+LESSONS.push({
+id:"office", kind:"situation", n:"🏛", short:"Учреждения", title:"Учреждения, почта, аптека, врач", sub:"złożyć wniosek, karta pobytu, list polecony, na receptę",
+rule:`<p>Язык учреждений формален, но предсказуем: чиновник говорит proszę + инфинитив, вы отвечаете chciałbym / potrzebuję + родительный.</p>
+<table><tr><th>Польский</th><th>Русский</th></tr>
+<tr><td>urząd (urząd miasta, urząd wojewódzki)</td><td>учреждение (мэрия, воеводское управление)</td></tr>
+<tr><td>złożyć wniosek, wypełnić formularz</td><td>подать заявление, заполнить бланк</td></tr>
+<tr><td>załącznik, podpis, pieczątka</td><td>приложение, подпись, печать</td></tr>
+<tr><td>PESEL, meldunek / zameldowanie, karta pobytu</td><td>идентификационный номер, регистрация по месту жительства, вид на жительство</td></tr>
+<tr><td>zaświadczenie, decyzja</td><td>справка, решение</td></tr>
+<tr><td>numerek, okienko, kolejka</td><td>талон, окошко, очередь</td></tr>
+<tr><td>poczta: list polecony, paczka, paczkomat, awizo</td><td>почта: заказное письмо, посылка, постамат, извещение</td></tr>
+<tr><td>apteka: recepta, lek na…, bez recepty</td><td>аптека: рецепт, лекарство от…, без рецепта</td></tr>
+<tr><td>lekarz: wizyta, umówić się, ubezpieczenie</td><td>врач: приём, записаться, страховка</td></tr></table>
+<ul>
+<li>mam + инфинитив — «мне надо, что я должен сделать»: Gdzie mam podpisać? Co mam zrobić?</li>
+<li>czeka się, płaci się, wypełnia się — безличные «ждут / платят / заполняют» с частицей się.</li>
+<li>«Лекарство от» — lek na + винительный (na ból głowy, na kaszel), не od.</li>
+<li>list — письмо (не «лист»); лист бумаги — kartka.</li>
+</ul>`,
+words:[["учреждение","urząd"],["заявление","wniosek"],["бланк","formularz"],["приложение (к заявлению)","załącznik"],["подпись","podpis"],["регистрация по месту жительства","meldunek"],["вид на жительство","karta pobytu"],["приём, визит","wizyta"],["талон очереди","numerek"],["окошко","okienko"],["почта","poczta"],["заказное письмо","list polecony"],["посылка","paczka"],["постамат","paczkomat"],["аптека","apteka"],["рецепт","recepta"],["врач","lekarz"],["страховка","ubezpieczenie"],["справка","zaświadczenie"]],
+s:[
+{ru:"Я (м.) хотел бы подать заявление.",pl:"Chciałbym złożyć wniosek.",acc:["[Ja] chciałbym złożyć wniosek"],d:["chciałabym","wniosku","składam"],t:["cond","vocab"],note:"złożyć wniosek — подать заявление (устойчивое сочетание; złożyć — буквально «сложить»). Несов. вид: składać wniosek."},
+{ru:"Где мне взять талон?",pl:"Gdzie mogę pobrać numerek?",acc:["Gdzie {mogę pobrać|pobrać|mogę wziąć|wziąć} numerek"],d:["numer","biorę","kolejka"],t:["modal","vocab"],note:"numerek — талон электронной очереди (уменьшительное от numer); pobrać — взять из автомата. Окошко — okienko."},
+{ru:"Мне нужна справка о регистрации.",pl:"Potrzebuję zaświadczenia o zameldowaniu.",acc:["[Ja] potrzebuję zaświadczenia o zameldowaniu"],d:["zaświadczenie","meldunek","zameldowanie"],t:["gen","loc"],note:"potrzebować + родительный: zaświadczenie → zaświadczenia; o + предложный: zameldowanie → o zameldowaniu. Регистрация — meldunek / zameldowanie."},
+{ru:"Какие документы нужны?",pl:"Jakie dokumenty są potrzebne?",acc:["Jakie dokumenty [są] potrzebne"],d:["jaki","dokumentów","potrzebny"],t:["adj","qword"],note:"dokumenty — мн. ч. неодушевлённых → jakie … potrzebne (окончание -e). potrzebny — нужный; potrzebna wiza, potrzebne dokumenty."},
+{ru:"Вот моё заявление и приложения.",pl:"To jest mój wniosek i załączniki.",acc:["To [jest] mój wniosek i załączniki","Oto mój wniosek i załączniki"],d:["moja","załącznik","wniosku"],t:["poss","vocab"],note:"wniosek — мужской род: mój wniosek; załącznik → мн. ч. załączniki. oto — «вот»."},
+{ru:"Где мне подписать?",pl:"Gdzie mam podpisać?",acc:["Gdzie {mam|trzeba|muszę} podpisać"],d:["podpis","podpisuję","podpisz"],t:["modal","vocab"],note:"mam + инфинитив — «мне надо, что я должен»: Gdzie mam podpisać? Co mam zrobić? Подпись — podpis."},
+{ru:"Сколько ждут решения?",pl:"Ile czeka się na decyzję?",acc:["{Ile|Jak długo} {czeka się|się czeka} na decyzję"],d:["decyzja","czekam","decyzji"],t:["order","acc"],note:"czeka się — безличное «ждут / приходится ждать» (глагол + się); czekać na + винительный: decyzja → na decyzję."},
+{ru:"У меня есть карта побыту.",pl:"Mam kartę pobytu.",acc:["[Ja] mam kartę pobytu"],d:["karta","pobyt","pobytem"],t:["acc","gen"],note:"karta pobytu — вид на жительство (буквально «карта пребывания»); pobytu — родительный (карта чего?); kartę — винительный."},
+{ru:"Я (ж.) хотела бы отправить заказное письмо.",pl:"Chciałabym wysłać list polecony.",acc:["[Ja] chciałabym {wysłać|nadać} list polecony"],d:["chciałbym","listu","polecone"],t:["cond","acc","vocab"],note:"list polecony — заказное письмо; nadać list — отправить на почте. list — письмо (не «лист»); лист бумаги — kartka."},
+{ru:"Посылка в постамате.",pl:"Paczka jest w paczkomacie.",acc:["Paczka [jest] w paczkomacie"],d:["paczkę","paczkomat","paczki"],t:["loc","vocab"],note:"paczkomat — постамат; w paczkomacie — предложный (t → ci). paczka — посылка; awizo — извещение."},
+{ru:"У вас есть что-нибудь от головной боли?",pl:"Czy jest coś na ból głowy?",acc:["[Czy] {jest coś|ma Pan coś|ma Pani coś} na ból głowy"],d:["od","boli","głowa"],t:["acc","gen","vocab"],note:"«От боли» по-польски — na ból (na + винительный), не od. ból głowy — головная боль (głowa → родительный głowy)."},
+{ru:"Это по рецепту?",pl:"Czy to jest na receptę?",acc:["[Czy] to [jest] na receptę"],d:["recepta","recepty","z"],t:["acc","vocab"],note:"na receptę — по рецепту (na + винительный); bez recepty — без рецепта (bez + родительный)."},
+{ru:"Я (м.) хотел бы записаться к врачу.",pl:"Chciałbym umówić się do lekarza.",acc:["[Ja] chciałbym {umówić się|się umówić} {do lekarza|na wizytę}"],d:["lekarz","umawiam","lekarzem"],t:["cond","gen"],note:"umówić się do lekarza / na wizytę — записаться на приём; do + родительный: lekarz → lekarza."},
+{ru:"У меня есть страховка.",pl:"Mam ubezpieczenie.",acc:["[Ja] mam ubezpieczenie"],d:["ubezpieczenia","jestem","ubezpieczony"],t:["vocab"],note:"ubezpieczenie — страховка (ср. род, винительный = именительный). Застрахован: Jestem ubezpieczony (м.) / ubezpieczona (ж.)."},
+{ru:"Заполните, пожалуйста, бланк. (Pan)",pl:"Proszę wypełnić formularz.",acc:["Proszę wypełnić formularz"],d:["wypełniam","formularza","wypełnij"],t:["request","vocab"],note:"wypełnić formularz — заполнить бланк; proszę + инфинитив — так говорит чиновник. На ты: wypełnij."},
+{ru:"Мне нужен номер PESEL.",pl:"Potrzebuję numeru PESEL.",acc:["[Ja] potrzebuję [numeru] PESEL","[Ja] potrzebuję peselu"],d:["numer","potrzebuje","meldunek"],t:["gen","vocab"],note:"PESEL — идентификационный номер; полностью numer PESEL, родительный numeru PESEL (аббревиатура не склоняется), разговорно — peselu."},
+{ru:"Когда следующий приём?",pl:"Kiedy jest następna wizyta?",acc:["Kiedy [jest] następna wizyta"],d:["następny","wizytę","termin"],t:["adj","qword"],note:"wizyta — приём у врача (ж. р.): następna wizyta. Запись в учреждении — termin: Kiedy jest następny termin?"},
+{ru:"Где я могу сделать копию?",pl:"Gdzie mogę zrobić ksero?",acc:["Gdzie mogę zrobić {ksero|kopię}"],d:["kopia","robię","kserować"],t:["modal","vocab"],note:"zrobić ksero — сделать ксерокопию (ksero не склоняется); kopia → kopię (винительный)."},
+{ru:"Я (ж.) записана на десять.",pl:"Jestem umówiona na dziesiątą.",acc:["[Ja] jestem umówiona na dziesiątą"],d:["umówiony","dziesiątej","umówić"],t:["time","adj"],note:"być umówionym na + винительный порядкового: na dziesiątą (на десять часов). Женщина — umówiona, мужчина — umówiony. Ср. o dziesiątej — «в десять» (предложный)."},
+{ru:"Спасибо за помощь, до свидания.",pl:"Dziękuję za pomoc, do widzenia.",acc:["Dziękuję za pomoc do widzenia"],d:["pomocy","zobaczenia","dzięki"],t:["acc","vocab"],note:"dziękować za + винительный: pomoc не меняется (ж. р. на согласный). do widzenia — официальное «до свидания»."}
+]});
+
+LESSONS.push({
+id:"sales", kind:"situation", n:"💼", short:"Продажи", title:"Продажи и деловые звонки", sub:"dzwonię w sprawie oferty, zająć chwilę, warunki płatności",
+rule:`<p>Деловой звонок по-польски держится на трёх вещах: Pan / Pani, условное наклонение и несколько формул. Всё остальное — лексика.</p>
+<table><tr><th>Этап</th><th>Формула</th></tr>
+<tr><td>Начало</td><td>Dzień dobry, dzwonię z firmy X w sprawie… / Czy mogę zająć Panu chwilę?</td></tr>
+<tr><td>Цель</td><td>Chciałbym przedstawić naszą ofertę. / Chciałbym umówić się na spotkanie.</td></tr>
+<tr><td>Выяснение</td><td>Jaki ma Pan budżet? / Kiedy podejmie Pan decyzję? / Kto decyduje?</td></tr>
+<tr><td>Условия</td><td>Termin płatności to 14 dni. / Montaż jest wliczony w cenę. / Dajemy pięć lat gwarancji.</td></tr>
+<tr><td>Возражение</td><td>Rozumiem. / To prawda, ale… / Właśnie dlatego…</td></tr>
+<tr><td>Следующий шаг</td><td>Prześlę ofertę mailem. / Odezwę się w przyszłym tygodniu. / Potwierdzę termin jutro.</td></tr>
+<tr><td>Завершение</td><td>Dziękuję za rozmowę, miłego dnia.</td></tr></table>
+<ul>
+<li>zająć komuś chwilę — занять чью-то минутку (дательный: Panu, Pani).</li>
+<li>odezwać się do kogoś (do + родительный) / skontaktować się z kimś (z + творительный) — «выйти на связь».</li>
+<li>Сравнение: droższy / tańszy niż … (дороже / дешевле, чем); u konkurencji — у конкурентов.</li>
+<li>rabat — скидка (dziesięć procent rabatu); wycena — расчёт стоимости; oferta — коммерческое предложение.</li>
+</ul>`,
+words:[["оферта, предложение","oferta"],["условия","warunki"],["скидка","rabat"],["оплата","płatność"],["срок оплаты","termin płatności"],["поставка","dostawa"],["монтаж","montaż"],["гарантия","gwarancja"],["решение","decyzja"],["конкуренты","konkurencja"],["по поводу","w sprawie"],["занять минутку","zająć chwilę"],["переслать","przesłać"],["подтвердить","potwierdzić"],["выйти на связь","odezwać się"],["договориться о встрече","umówić się"],["дистрибьютор","dystrybutor"],["сотрудничество","współpraca"],["расчёт стоимости","wycena"]],
+s:[
+{ru:"Здравствуйте, я звоню из фирмы «Солярис» по поводу оферты.",pl:"Dzień dobry, dzwonię z firmy Solaris w sprawie oferty.",acc:["Dzień dobry dzwonię z firmy Solaris w sprawie oferty"],d:["firma","firmę","sprawa"],t:["gen","vocab"],note:"z firmy — из фирмы (z + родительный); w sprawie + родительный — по поводу. Стандартное начало делового звонка."},
+{ru:"Могу я занять у вас (Pan) минуту?",pl:"Czy mogę zająć Panu chwilę?",acc:["[Czy] mogę zająć Panu {chwilę|minutę}"],d:["Pana","Pani","chwila"],t:["dat","pan","request"],note:"zająć komuś chwilę — занять чью-то минутку: дательный Panu (к женщине — Pani); chwilę — винительный."},
+{ru:"Я (м.) хотел бы представить наше предложение.",pl:"Chciałbym przedstawić naszą ofertę.",acc:["[Ja] chciałbym przedstawić naszą {ofertę|propozycję}"],d:["nasza","chciałabym","oferty"],t:["cond","acc","poss"],note:"przedstawić — представить, показать; nasza oferta → naszą ofertę (винительный ж. р. и у местоимения, и у существительного)."},
+{ru:"Когда мы (м.) могли бы встретиться?",pl:"Kiedy moglibyśmy się spotkać?",acc:["Kiedy moglibyśmy {się spotkać|spotkać się}"],d:["możemy","spotkamy","mogłybyśmy"],t:["cond","qword"],note:"moglibyśmy — «могли бы мы» (условное, мужская форма; только женщины — mogłybyśmy). Прямее: Kiedy możemy się spotkać?"},
+{ru:"Я пришлю оферту по электронной почте.",pl:"Prześlę ofertę mailem.",acc:["[Ja] {prześlę|wyślę} ofertę {mailem|e-mailem|na maila|na e-mail}"],d:["mail","prześlemy","oferta"],t:["perf","instr"],note:"mailem — творительный от mail (по почте — чем?). Тоже верно: na maila / na e-mail. przesłać → prześlę (перешлю)."},
+{ru:"Какой у вас (Pan) бюджет на этот проект?",pl:"Jaki ma Pan budżet na ten projekt?",acc:["Jaki {ma Pan|Pan ma} budżet na ten projekt","Jaki jest Pana budżet na ten projekt"],d:["Pani","tego","budżetu"],t:["pan","acc","qword"],note:"budżet na + винительный: na ten projekt. С притяжательным: Jaki jest Pana budżet?"},
+{ru:"Мы можем предложить скидку десять процентов.",pl:"Możemy zaproponować dziesięć procent rabatu.",acc:["[My] możemy zaproponować {dziesięć procent rabatu|rabat dziesięć procent|dziesięcioprocentowy rabat}"],d:["rabaty","procentów","proponujemy"],t:["modal","num","money"],note:"rabat — скидка; dziesięć procent rabatu (rabatu — родительный: десять процентов чего?). zaproponować — предложить (сов.)."},
+{ru:"Срок оплаты — четырнадцать дней.",pl:"Termin płatności to czternaście dni.",acc:["Termin płatności {to|wynosi} czternaście dni"],d:["dnia","płatność","czternasty"],t:["num","gen","money"],note:"termin płatności — срок оплаты (płatność → родительный płatności); czternaście dni — 14 дней (dzień → род. мн. dni)."},
+{ru:"Мы даём пять лет гарантии.",pl:"Dajemy pięć lat gwarancji.",acc:["[My] {dajemy|udzielamy} pięć lat gwarancji","[My] dajemy gwarancję na pięć lat"],d:["gwarancja","rok","lata"],t:["num","gen"],note:"rok → мн. ч. lata → род. мн. lat: pięć lat; gwarancji — родительный. Или: gwarancja na pięć lat."},
+{ru:"Монтаж включён в цену.",pl:"Montaż jest wliczony w cenę.",acc:["Montaż [jest] {wliczony w cenę|w cenie}"],d:["wliczone","ceny","montażu"],t:["adj","acc"],note:"wliczony w + винительный (w cenę) — «включён в цену»; синоним: w cenie (предложный). montaż — мужской род → wliczony."},
+{ru:"Когда вы (Pan) примете решение?",pl:"Kiedy podejmie Pan decyzję?",acc:["Kiedy {podejmie Pan|Pan podejmie} decyzję"],d:["decyzja","zdecyduje","podejmiesz"],t:["perf","pan","acc"],note:"podjąć decyzję — принять решение (podjąć → podejmie); decyzja → decyzję (винительный). Короче: Kiedy Pan zdecyduje?"},
+{ru:"Мы сотрудничаем с дистрибьюторами по всей Польше.",pl:"Współpracujemy z dystrybutorami w całej Polsce.",acc:["[My] {współpracujemy|pracujemy} z dystrybutorami w całej Polsce"],d:["dystrybutorów","cała","Polska"],t:["instr","loc"],note:"współpracować z + творительный мн. ч.: dystrybutorami (-ami); w całej Polsce — по всей Польше (предложный: cała → całej, Polska → Polsce)."},
+{ru:"Это дороже, чем у конкурентов.",pl:"To jest droższe niż u konkurencji.",acc:["To [jest] droższe niż u konkurencji"],d:["drogo","droższy","konkurencja"],t:["adj","gen"],note:"droższy / droższa / droższe — сравнительная степень от drogi; здесь средний род (to). niż — «чем»; u konkurencji — «у конкурентов» (u + родительный)."},
+{ru:"Я подтвержу срок завтра.",pl:"Potwierdzę termin jutro.",acc:["[Ja] {potwierdzę termin jutro|jutro potwierdzę termin}"],d:["potwierdzam","terminu","będę"],t:["perf"],note:"potwierdzić → potwierdzę — подтвержу (сов. вид как будущее). potwierdzam — «подтверждаю» (сейчас)."},
+{ru:"Я свяжусь с вами (Pani) на следующей неделе.",pl:"Odezwę się do Pani w przyszłym tygodniu.",acc:["[Ja] odezwę się do Pani w przyszłym tygodniu","[Ja] skontaktuję się z Panią w przyszłym tygodniu"],d:["Pana","odzywam","tygodniem"],t:["perf","gen","pan","time"],note:"odezwać się do kogoś — «выйти на связь» (do + родительный: do Pani); skontaktować się z kimś (z + творительный: z Panią). Обе формулы — стандарт."},
+{ru:"Спасибо за разговор, хорошего дня.",pl:"Dziękuję za rozmowę, miłego dnia.",acc:["Dziękuję za rozmowę miłego dnia"],d:["rozmowa","dobrego","dzień"],t:["acc","gen","vocab"],note:"rozmowa → za rozmowę (винительный); miłego dnia — родительный после пожелания."},
+{ru:"Пришлите, пожалуйста, подтверждение заказа. (Pani)",pl:"Proszę przesłać potwierdzenie zamówienia.",acc:["Proszę {przesłać|wysłać} potwierdzenie zamówienia"],d:["potwierdzić","zamówienie","prześlę"],t:["request","gen"],note:"potwierdzenie zamówienia — подтверждение заказа (zamówienia — родительный). proszę + инфинитив — вежливая просьба к Pan / Pani."},
+{ru:"Поставка займёт две недели.",pl:"Dostawa zajmie dwa tygodnie.",acc:["Dostawa {zajmie|potrwa} dwa tygodnie"],d:["dwie","tydzień","zajmuje"],t:["num","perf"],note:"tydzień (м. р.) → dwa tygodnie (2–4 + им. мн. ч.); zająć → zajmie — займёт; potrwa — продлится."},
+{ru:"Нам нужно ваше (Państwo) решение до пятницы.",pl:"Potrzebujemy Państwa decyzji do piątku.",acc:["[My] potrzebujemy Państwa decyzji do piątku"],d:["decyzję","Państwu","piątek"],t:["gen","pan","time"],note:"potrzebować + родительный: decyzja → decyzji; Państwa — «ваше» к группе; do piątku — до пятницы (do + родительный)."},
+{ru:"Можем уточнить условия оплаты?",pl:"Czy możemy doprecyzować warunki płatności?",acc:["[Czy] {możemy|mogę|można} doprecyzować warunki płatności"],d:["warunek","płatność","precyzować"],t:["modal","gen"],note:"doprecyzować — уточнить (сов.); warunki płatności — условия оплаты (warunek → мн. warunki; płatność → род. płatności)."}
+]});
+
+
+/* ===== Опорные таблицы (кнопка «Подсказка») ===== */
+const REF_HTML = `
+<h2>Опорные таблицы</h2>
+<h3>Главная схема: тип предложения × время</h3>
+<p class="small">Глагол robić — «делать». Форма для «я»; в вопросе — для «ты».</p>
+<table class="main">
+<tr><th></th><th>Будущее</th><th>Настоящее</th><th>Прошедшее</th></tr>
+<tr><th>Вопрос</th><td>Czy będziesz robić?<br><span class="alt">сов.: Czy zrobisz?</span></td><td>Czy robisz?</td><td>Czy robiłeś? / robiłaś?</td></tr>
+<tr><th>Утверждение</th><td>Będę robić<br><span class="alt">= będę robił / robiła<br>сов.: Zrobię</span></td><td>Robię</td><td>Robiłem / robiłam</td></tr>
+<tr><th>Отрицание</th><td>Nie będę robić<br><span class="alt">сов.: Nie zrobię</span></td><td>Nie robię</td><td>Nie robiłem / robiłam</td></tr>
+</table>
+<ul>
+<li><b>Вопрос</b> = czy + утверждение без изменения порядка слов, или просто интонация. С вопросительным словом czy не нужно: Co robisz?</li>
+<li><b>Отрицание</b> = nie перед глаголом; прямое дополнение переходит в родительный: mam czas → nie mam czasu.</li>
+<li><b>Будущее</b>: несов. вид — będę + инфинитив; сов. вид — форма настоящего (zrobię, powiem, kupię).</li>
+<li><b>Прошедшее</b>: -ł- + окончание с родом (byłem / byłam).</li>
+</ul>
+
+<h3>Настоящее время: три группы спряжения</h3>
+<table>
+<tr><th></th><th>-am / -asz<br>czytać</th><th>-ę / -isz (-ysz)<br>mówić</th><th>-ę / -esz<br>pracować</th></tr>
+<tr><th>ja</th><td>czyt<b>am</b></td><td>mówi<b>ę</b></td><td>pracuj<b>ę</b></td></tr>
+<tr><th>ty</th><td>czyt<b>asz</b></td><td>mów<b>isz</b></td><td>pracuj<b>esz</b></td></tr>
+<tr><th>on, ona, ono<br>Pan, Pani</th><td>czyt<b>a</b></td><td>mów<b>i</b></td><td>pracuj<b>e</b></td></tr>
+<tr><th>my</th><td>czyt<b>amy</b></td><td>mów<b>imy</b></td><td>pracuj<b>emy</b></td></tr>
+<tr><th>wy</th><td>czyt<b>acie</b></td><td>mów<b>icie</b></td><td>pracuj<b>ecie</b></td></tr>
+<tr><th>oni, one<br>Państwo</th><td>czyt<b>ają</b></td><td>mówi<b>ą</b></td><td>pracuj<b>ą</b></td></tr>
+</table>
+<p>być: jestem, jesteś, jest, jesteśmy, jesteście, są. Подтип -em/-esz: wiem, wiesz, wie, wiemy, wiecie, wiedzą; rozumiem, rozumiesz, rozumie, rozumiemy, rozumiecie, rozumieją; umiem, umiesz, umie, umiemy, umiecie, umieją.</p>
+<p>Модальные: musieć — muszę, musisz, musi, musimy, musicie, muszą; móc — mogę, możesz, może, możemy, możecie, mogą; chcieć — chcę, chcesz, chce, chcemy, chcecie, chcą.</p>
+
+<h3>Прошедшее время</h3>
+<table>
+<tr><th></th><th>мужской</th><th>женский</th></tr>
+<tr><th>ja</th><td>był<b>em</b></td><td>był<b>am</b></td></tr>
+<tr><th>ty</th><td>był<b>eś</b></td><td>był<b>aś</b></td></tr>
+<tr><th>on / ona / ono</th><td>był</td><td>był<b>a</b> / był<b>o</b></td></tr>
+<tr><th>my</th><td>by<b>liśmy</b></td><td>był<b>yśmy</b></td></tr>
+<tr><th>wy</th><td>by<b>liście</b></td><td>był<b>yście</b></td></tr>
+<tr><th>oni / one</th><td>by<b>li</b></td><td>był<b>y</b></td></tr>
+</table>
+<p>Мужская форма мн. ч. (-li) — если в группе есть хотя бы один мужчина. У глаголов на -eć перед ł: e → a (mieć → miałem, miała), но в мужском мн. ч. e остаётся (mieli).</p>
+
+<h3>Будущее время</h3>
+<p>być: będę, będziesz, będzie, będziemy, będziecie, będą. Несов.: będę czekać (= będę czekał / czekała). Сов. — форма настоящего: zrobię, zadzwonię, kupię, napiszę, wyślę, zapłacę, powiem, dam, pójdę.</p>
+
+<h3>Падежи: после чего какой</h3>
+<table>
+<tr><th>Падеж</th><th>Когда</th><th>Примеры</th></tr>
+<tr><td>Родительный</td><td>после nie; после do, z (откуда), od, dla, bez, u; после szukać, słuchać, potrzebować, uczyć się, bać się</td><td>nie mam czasu, do klienta, z Ukrainy, szukam pracy, słucham muzyki, uczę się polskiego</td></tr>
+<tr><td>Дательный</td><td>кому? после dziękować, pomagać, dawać</td><td>dziękuję Panu / Pani / Państwu, daję ci, pomagam koledze</td></tr>
+<tr><td>Винительный</td><td>прямое дополнение; после na, za, o, przez, w (куда? когда?)</td><td>mam czas, czytam umowę, znam klienta, czekam na odpowiedź, w piątek, tę umowę</td></tr>
+<tr><td>Творительный</td><td>после być (профессия, статус); после z (с кем?); транспорт; способ оплаты; interesować się</td><td>jestem inżynierem, jest Ukrainką, z szefem, samochodem, kartą, interesuję się sprzedażą</td></tr>
+<tr><td>Предложный</td><td>где? о чём? после w, na, o, przy, po</td><td>w Warszawie, w biurze, w Polsce, na spotkaniu, o umowie, o cenie</td></tr>
+</table>
+<h4>Окончания винительного и родительного</h4>
+<table>
+<tr><th>Род</th><th>Именительный</th><th>Винительный</th><th>Родительный</th></tr>
+<tr><td>м. неодуш.</td><td>czas, projekt</td><td>czas, projekt</td><td>czasu, projektu</td></tr>
+<tr><td>м. одуш.</td><td>klient, szef</td><td>klienta, szefa</td><td>klienta, szefa</td></tr>
+<tr><td>ж. на -a</td><td>umowa, książka</td><td>umowę, książkę</td><td>umowy, książki</td></tr>
+<tr><td>ж. на согласный</td><td>wiadomość, sprzedaż</td><td>wiadomość, sprzedaż</td><td>wiadomości, sprzedaży</td></tr>
+<tr><td>средний</td><td>spotkanie, biuro</td><td>spotkanie, biuro</td><td>spotkania, biura</td></tr>
+<tr><td>мн. ч., не мужчины</td><td>faktury, dokumenty</td><td>faktury, dokumenty</td><td>faktur, dokumentów</td></tr>
+<tr><td>мн. ч., мужчины</td><td>klienci, koledzy</td><td>klientów, kolegów</td><td>klientów, kolegów</td></tr>
+</table>
+
+<h3>Вежливые формы</h3>
+<table>
+<tr><th></th><th>к мужчине</th><th>к женщине</th><th>к группе</th></tr>
+<tr><td>кто? (им.)</td><td>Pan</td><td>Pani</td><td>Państwo</td></tr>
+<tr><td>кого? чей? (род.)</td><td>Pana</td><td>Pani</td><td>Państwa</td></tr>
+<tr><td>кому? (дат.)</td><td>Panu</td><td>Pani</td><td>Państwu</td></tr>
+<tr><td>кого? (вин.)</td><td>Pana</td><td>Panią</td><td>Państwa</td></tr>
+<tr><td>с кем? (твор.)</td><td>z Panem</td><td>z Panią</td><td>z Państwem</td></tr>
+<tr><td>о ком? (предл.)</td><td>o Panu</td><td>o Pani</td><td>o Państwu</td></tr>
+<tr><td>обращение</td><td>Panie Kowalski!</td><td>Pani Anno!</td><td>Proszę Państwa!</td></tr>
+</table>
+<p>Глагол: Pan / Pani + 3-е лицо ед. ч. (Pan ma, Pani była); Państwo + 3-е лицо мн. ч. мужской формы (Państwo mają, Państwo byli).</p>
+
+<h3>Как читать транскрипцию</h3>
+<p>Транскрипция практическая (как в разговорниках), не фонетическая. Ударение отмечено знаком над гласной и почти всегда падает на предпоследний слог; исключения — формы на -liśmy / -liście (byli&#769;śmy), muzyka, а также nie + односложный глагол (nie&#769; mam) и предлог + односложное местоимение (na&#769; nich).</p>
+<table>
+<tr><th>Знак</th><th>Польский</th><th>Как звучит</th></tr>
+<tr><td>ў</td><td>ł</td><td>как английское w: губы трубочкой, без касания зубов (był — быў)</td></tr>
+<tr><td>щ</td><td>ś, si</td><td>мягкий шипящий, короче русского щ (jesteś — естэщ)</td></tr>
+<tr><td>ч / чь / че</td><td>cz — твёрдое; ć, ci — мягкое</td><td>czekać — чэкачь; ciebie — чебе</td></tr>
+<tr><td>ж / ш</td><td>ż, rz; после глухих rz → ш</td><td>może — можэ; przy — пшы; trzeba — тшэба</td></tr>
+<tr><td>дз / дзь / дж</td><td>dz; dź, dzi; dż</td><td>bardzo — бардзо; dziękuję — дзенкуе</td></tr>
+<tr><td>э / е</td><td>e</td><td>э после твёрдых (teraz — тэрас), е после мягких (nie — не)</td></tr>
+<tr><td>он / эн, ом / эм, оу</td><td>ą / ę</td><td>носовые: перед согласными — он / эн (będę — бэндэ), перед b, p — ом / эм, в конце слова ą — оу (są — соу), ę — э (proszę — прошэ)</td></tr>
+<tr><td>ф, т, к, с, ш, п</td><td>w, d, g, z, ż, b в конце слова и перед глухими</td><td>Kraków — кракуф; w pracy — ф працы; już — юш</td></tr>
+<tr><td>ль / ля / ле</td><td>l</td><td>всегда мягкое: Polska — польска, lubię — любе</td></tr>
+</table>
+<h3>Обозначения в заданиях</h3>
+<p>«Вы (мн.)» — несколько человек на ты (wy). «(Pan) / (Pani) / (Państwo)» — вежливое обращение. «(м.) / (ж.)» — род говорящего или собеседника. Знаки препинания и регистр при проверке не учитываются; диакритика учитывается и даёт отдельный жёлтый статус.</p>
+`;
+
+/* ===== Практическая транскрипция польского кириллицей =====
+   Правила: оглушение в конце слова и перед глухими, озвончение перед звонкими,
+   rz/w после глухих → ш/ф, носовые ą/ę по позиции, ударение на предпоследний слог
+   (исключения: -liśmy/-łyśmy/-liście/-łyście, powinniśmy, muzyka; nie + односложный глагол;
+   предлог + односложное местоимение). */
+var TR=(function(){
+  var VOW='aeiouyąęó';
+  var DEV={'b':'p','d':'t','g':'k','w':'f','z':'s','ź':'ś','ż':'sz','rz':'sz','dz':'c','dź':'ć','dż':'cz','h':'ch'};
+  var VOI={'p':'b','t':'d','k':'g','f':'w','s':'z','ś':'ź','sz':'ż','c':'dz','ć':'dź','cz':'dż','ch':'h'};
+  var SOFT={'ć':1,'ś':1,'ź':1,'dź':1,'ń':1};
+  var CONS={'b':'б','c':'ц','ć':'ч','d':'д','dz':'дз','dź':'дз','dż':'дж','f':'ф','g':'г','h':'х','ch':'х','k':'к','l':'л','ł':'ў','m':'м','n':'н','ń':'н','p':'п','r':'р','rz':'ж','s':'с','ś':'щ','sz':'ш','t':'т','w':'в','z':'з','ź':'з','ż':'ж','cz':'ч','j':'й'};
+  var HARD={'a':'а','e':'э','o':'о','u':'у','ó':'у','y':'ы','i':'и','ą':'о','ę':'э'};
+  var SOFTV={'a':'я','e':'е','o':'ё','u':'ю','ó':'ю','y':'ы','i':'и','ą':'ё','ę':'е'};
+  var AFTERCS={'a':'а','e':'е','o':'о','u':'у','ó':'у','y':'ы','i':'и','ą':'о','ę':'е'};
+  var PREP={'w':1,'z':1,'bez':1,'od':1,'pod':1,'nad':1,'przed':1,'przez':1,'spod':1,'znad':1,'do':1,'na':1,'za':1,'o':1,'po':1,'u':1,'dla':1,'ze':1,'we':1,'przy':1,'ku':1};
+  var PRON1={'mnie':1,'cię':1,'nich':1,'nie':1,'nim':1,'niej':1,'nas':1,'was':1,'nią':1,'ciebie':0};
+  var ANTE={'powinniśmy':1,'powinnyśmy':1,'powinniście':1,'powinnyście':1,'muzyka':1,'muzyki':1,'muzykę':1,'muzyką':1,'muzyce':1};
+  function isObs(p){return (p in DEV)||(p in VOI);}
+  function isV(c){return !!c&&VOW.indexOf(c)>=0;}
+  /* Разбор слова на фонетические единицы */
+  function units(w){
+    var u=[],i=0,n=w.length;
+    while(i<n){
+      var c=w[i];
+      if(isV(c)){u.push({t:'v',v:c});i++;continue;}
+      var p=c,len=1,c2=w.substr(i,2);
+      if(c2==='ch'||c2==='cz'||c2==='sz'||c2==='rz'||c2==='dz'||c2==='dź'||c2==='dż'){p=c2;len=2;}
+      i+=len;
+      var soft=false;
+      if(w[i]==='i'){
+        var afterI=w[i+1];
+        if(p==='c')p='ć';else if(p==='s')p='ś';else if(p==='z')p='ź';else if(p==='dz')p='dź';else if(p==='n')p='ń';else soft=true;
+        i++;
+        u.push({t:'c',p:p,soft:soft});
+        if(!isV(afterI))u.push({t:'v',v:'i'});
+        continue;
+      }
+      if(!/[a-ząćęłńóśźż]/.test(p)){continue;}
+      u.push({t:'c',p:p,soft:false});
+    }
+    return u;
+  }
+  /* Ассимиляция по звонкости. nextV: 'voiced' | 'voiceless' | 'none' — что следует за словом */
+  function assimilate(u,nextV,isPrep){
+    var state=nextV==='voiceless'?'voiceless':'none';
+    for(var i=u.length-1;i>=0;i--){
+      var x=u[i];
+      if(x.t==='v'){state='none';continue;}
+      if(!isObs(x.p)){state='none';continue;}
+      var weak=(x.p==='w'||x.p==='rz');
+      if(state==='voiceless')x.p=DEV[x.p]||x.p;
+      else if(state==='voiced'&&!weak)x.p=VOI[x.p]||x.p;
+      state=(x.p in DEV)?(weak?'none':'voiced'):'voiceless';
+    }
+    for(var k=1;k<u.length;k++){
+      var y=u[k];
+      if(y.t==='c'&&(y.p==='w'||y.p==='rz')){var prev=u[k-1];if(prev.t==='c'&&isObs(prev.p)&&(prev.p in VOI))y.p=DEV[y.p];}
+    }
+  }
+  function firstObs(w){
+    var u=units(w);if(!u.length||u[0].t!=='c'||!isObs(u[0].p))return 'none';
+    var p=u[0].p;if(p==='w'||p==='rz')return 'weak';return (p in DEV)?'voiced':'voiceless';
+  }
+  function nasalTail(v,next){
+    if(!next||next.t!=='c')return v==='ą'?'у':'';
+    var p=next.p;
+    if(p==='p'||p==='b')return 'м';
+    if(p==='ł'||p==='l')return '';
+    if(SOFT[p])return 'нь';
+    return 'н';
+  }
+  /* Транслитерация единиц; возвращает {s:строка, nuc:[позиции гласных]} */
+  function render(u){
+    var out='',nuc=[],prevSoft='hard';
+    for(var i=0;i<u.length;i++){
+      var x=u[i],next=u[i+1];
+      if(x.t==='v'){
+        var tbl=prevSoft==='soft'?SOFTV:(prevSoft==='cs'?AFTERCS:HARD);
+        nuc.push(out.length);
+        out+=tbl[x.v];
+        if(x.v==='ą'||x.v==='ę')out+=nasalTail(x.v,next);
+        prevSoft='hard';continue;
+      }
+      var p=x.p,nv=next&&next.t==='v';
+      if(p==='j'){if(nv){prevSoft='soft';}else{out+='й';prevSoft='hard';}continue;}
+      if(p==='l'){out+='л';if(nv){prevSoft='soft';}else{out+='ь';prevSoft='hard';}continue;}
+      if(p==='ć'){out+='ч';if(nv)prevSoft='cs';else{out+='ь';prevSoft='hard';}continue;}
+      if(p==='ś'){out+='щ';prevSoft=nv?'cs':'hard';continue;}
+      if(p==='ź'||p==='dź'||p==='ń'){out+=CONS[p];if(nv)prevSoft='soft';else{out+='ь';prevSoft='hard';}continue;}
+      out+=CONS[p]||'';
+      prevSoft=x.soft&&nv?'soft':'hard';
+    }
+    return {s:out,nuc:nuc};
+  }
+  var ACC='\u0301';
+  function stressIndex(w,syl){
+    if(syl<2)return -1;
+    if(ANTE[w]||/(liśmy|łyśmy|liście|łyście)$/.test(w))return syl>=3?syl-3:syl-2;
+    return syl-2;
+  }
+  function word(w,opt){
+    opt=opt||{};
+    var u=units(w);
+    assimilate(u,opt.nextV||'none',!!opt.prep);
+    var r=render(u);
+    var idx=opt.forceFirst?0:stressIndex(w,r.nuc.length);
+    if(idx>=0&&idx<r.nuc.length){var pos=r.nuc[idx]+1;r.s=r.s.slice(0,pos)+ACC+r.s.slice(pos);}
+    return r.s;
+  }
+  function syllables(w){return units(w).filter(function(x){return x.t==='v';}).length;}
+  /* Фраза: слова через пробел; знаки препинания отбрасываются */
+  function phrase(text){
+    var toks=String(text).toLowerCase().replace(/[^a-ząćęłńóśźż\s]/g,' ').split(/\s+/).filter(Boolean);
+    return toks.map(function(t,i){
+      var nx=toks[i+1],isPrep=!!PREP[t],nextV='none';
+      if(nx){var fo=firstObs(nx);if(fo==='voiceless')nextV='voiceless';else if(fo==='voiced'||fo==='weak')nextV='none';else nextV=isPrep?'none':'voiceless';}
+      else nextV=isPrep?'none':'voiceless';
+      var force=false;
+      if(nx&&syllables(nx)===1){if(t==='nie'&&syllables(t)===1)force=true;else if(isPrep&&PRON1[nx])force=true;}
+      return word(t,{nextV:nextV,prep:isPrep,forceFirst:force&&syllables(t)===1});
+    }).join(' ');
+  }
+  /* Словарная запись: части через « / », пояснения в скобках отбрасываются */
+  function entry(s){
+    var parens=[];
+    var base=String(s).replace(/\(([^)]*)\)/g,function(m,g){if(/^[a-ząćęłńóśźż\s\/]+$/i.test(g))parens.push(g);return ' ';});
+    var main=base.split(/\s*\/\s*/).map(function(p){p=p.trim();return p?phrase(p):'';}).filter(Boolean).join(' / ');
+    var extra=parens.map(function(g){return g.split(/\s*\/\s*/).map(function(p){p=p.trim();return p?phrase(p):'';}).filter(Boolean).join(' / ');}).filter(Boolean);
+    return extra.length?main+' ('+extra.join('; ')+')':main;
+  }
+  return {phrase:phrase,entry:entry,word:word};
+})();
+
+/* ===== Логика тренажёра (v2) ===== */
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s);};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+var PUNCT=/[.,!?;:"'«»„“”()\[\]{}\-–—…\/]/g;
+var KEEP=/^(Pan|Pani|Panie|Państwo|Państwa|Państwu|Pana|Panu|Panią|Panem|Warszaw[\wąćęłńóśźż]*|Polsk[\wąćęłńóśźż]*|Polsce|Krak[\wąćęłńóśźż]*|Ukrain[\wąćęłńóśźż]*|Kowalski|PESEL|Solaris)$/;
+var DIA={'ą':'a','ć':'c','ę':'e','ł':'l','ń':'n','ó':'o','ś':'s','ź':'z','ż':'z'};
+var DIACHARS=['ą','ć','ę','ł','ń','ó','ś','ź','ż'];
+var DAY=86400000, INTERVALS=[0,1,3,7,14,30];
+
+function norm(s){return String(s).toLowerCase().replace(PUNCT,' ').replace(/\s+/g,' ').trim();}
+function strip(s){return s.replace(/[ąćęłńóśźż]/g,function(c){return DIA[c];});}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function tagRu(s){return esc(s).replace(/\(([^)]+)\)/g,'<span class="tag">($1)</span>');}
+function fmtGrade(g){return (g==null||isNaN(g))?'–':(Math.round(g*10)/10).toFixed(1);}
+
+function expand(s){
+  var i=0;
+  while(i<s.length&&s[i]!=='['&&s[i]!=='{')i++;
+  if(i===s.length)return [s];
+  var open=s[i],depth=0,j=i;
+  for(;j<s.length;j++){
+    if(s[j]==='['||s[j]==='{')depth++;
+    else if(s[j]===']'||s[j]==='}'){depth--;if(depth===0)break;}
+  }
+  var before=s.slice(0,i),inner=s.slice(i+1,j),after=s.slice(j+1);
+  var innerOpts;
+  if(open==='['){innerOpts=[''].concat(expand(inner));}
+  else{
+    var parts=[],d=0,last=0;
+    for(var k=0;k<inner.length;k++){
+      var c=inner[k];
+      if(c==='['||c==='{')d++;
+      else if(c===']'||c==='}')d--;
+      else if(c==='|'&&d===0){parts.push(inner.slice(last,k));last=k+1;}
+    }
+    parts.push(inner.slice(last));
+    innerOpts=[];
+    parts.forEach(function(p){innerOpts=innerOpts.concat(expand(p));});
+  }
+  var afters=expand(after),out=[];
+  innerOpts.forEach(function(o){afters.forEach(function(a){out.push(before+o+a);});});
+  return out;
+}
+
+/* ===== Подготовка данных ===== */
+LESSONS.forEach(function(L,li){
+  L.id=(L.id!=null)?String(L.id):String(L.n);
+  L.kind=L.kind||'grammar';
+  L.idx=li;
+  L.s.forEach(function(S,si){
+    var set={};
+    set[norm(S.pl)]=true;
+    (S.acc||[]).forEach(function(p){expand(p).forEach(function(v){var n=norm(v);if(n)set[n]=true;});});
+    S._acc=set;
+    S._accList=Object.keys(set);
+    S._str={};
+    S._accList.forEach(function(v){var k=strip(v);if(!S._str[k])S._str[k]=v;});
+    S._tok=S.pl.replace(PUNCT,' ').split(/\s+/).filter(Boolean).map(function(t,i){return (i===0&&!KEEP.test(t))?t.toLowerCase():t;});
+    S._tags=S.t||(typeof SENT_TAGS!=='undefined'&&SENT_TAGS[L.n]&&SENT_TAGS[L.n][si])||['vocab'];
+    S._key=L.id+':'+si;
+  });
+});
+
+/* ===== Хранилище ===== */
+var settings={grid:'hidden',tr:true};
+var progress={v:2,sent:{},lessons:{},words:{},ps:{},ws:{}};
+function loadStore(){
+  try{var s=JSON.parse(localStorage.getItem('pl16settings')||'null');if(s&&typeof s==='object'){if(s.grid==='always'||s.grid==='hidden')settings.grid=s.grid;if(typeof s.tr==='boolean')settings.tr=s.tr;}}catch(e){}
+  try{var p=JSON.parse(localStorage.getItem('pl16progress')||'null');if(p&&p.v===2){progress.sent=p.sent||{};progress.lessons=p.lessons||{};progress.words=p.words||{};progress.ps=p.ps||{};progress.ws=p.ws||{};}}catch(e){}
+}
+var saveTimer=null;
+function saveStore(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(persist,50);
+}
+function persist(){
+  try{localStorage.setItem('pl16settings',JSON.stringify(settings));}catch(e){}
+  try{
+    var ps={};Object.keys(state.ps).forEach(function(k){var s=state.ps[k];if(s&&s.kind==='lesson')ps[k]={queue:s.queue,first:s.first,solved:s.solved,attempts:s.attempts,correct:s.correct,wrong:s.wrong,n:s.items.length};});
+    var ws={};Object.keys(state.ws).forEach(function(k){var s=state.ws[k];if(s)ws[k]={queue:s.queue,solved:s.solved,attempts:s.attempts,wrong:s.wrong};});
+    progress.ps=ps;progress.ws=ws;
+    localStorage.setItem('pl16progress',JSON.stringify(progress));
+  }catch(e){}
+}
+function resetProgress(){
+  progress={v:2,sent:{},lessons:{},words:{},ps:{},ws:{}};
+  state.ps={};state.ws={};state.special={};
+  try{localStorage.removeItem('pl16progress');}catch(e){}
+}
+function sentStat(key){var s=progress.sent[key];if(!s){s={a:0,c:0,w:0,fa:0,fc:0,lf:null,box:0,due:0};progress.sent[key]=s;}return s;}
+
+/* ===== Состояние ===== */
+var state={lesson:0,mode:'phrases',view:'lesson',ps:{},ws:{},special:{}};
+function L(){return LESSONS[state.lesson];}
+function itemsOfLesson(L){return L.s.map(function(S,i){return {l:L.idx,i:i};});}
+function itemSentence(it){return LESSONS[it.l].s[it.i];}
+function newSession(items,kind,shuffled){
+  var n=items.length,q=[];for(var i=0;i<n;i++)q.push(i);
+  if(shuffled)shuffle(q);
+  return {kind:kind,items:items,queue:q,first:new Array(n).fill(null),solved:new Array(n).fill(false),attempts:0,correct:0,wrong:0,checked:null,grid:null,gridFor:-1,gridShown:false};
+}
+function PS(){
+  if(state.view==='errors'||state.view==='review'){var sp=state.special[state.view];if(!sp)sp=state.special[state.view]=buildSpecial(state.view);return sp;}
+  var l=L(),id=l.id,s=state.ps[id];
+  if(!s){
+    var saved=progress.ps[id];
+    if(saved&&saved.n===l.s.length&&saved.queue&&saved.first&&saved.solved){
+      s=newSession(itemsOfLesson(l),'lesson',false);
+      s.queue=saved.queue.slice();s.first=saved.first.slice();s.solved=saved.solved.slice();s.attempts=saved.attempts||0;s.correct=saved.correct||0;s.wrong=saved.wrong||0;
+    }else{var lp=progress.lessons[id];s=newSession(itemsOfLesson(l),'lesson',!!(lp&&lp.passes));}
+    state.ps[id]=s;
+  }
+  return s;
+}
+function WS(){
+  var l=L(),id=l.id,s=state.ws[id];
+  if(!s){
+    var saved=progress.ws[id];
+    if(saved&&saved.solved&&saved.solved.length===l.words.length&&saved.queue){s={queue:saved.queue.slice(),solved:saved.solved.slice(),attempts:saved.attempts||0,wrong:saved.wrong||0,opts:null,optsFor:-1,fb:null,timer:null};}
+    else s=newWS();
+    state.ws[id]=s;
+  }
+  return s;
+}
+function newWS(){
+  var m=L().words.length,q=[];for(var i=0;i<m;i++)q.push(i);
+  return {queue:shuffle(q),solved:new Array(m).fill(false),attempts:0,wrong:0,opts:null,optsFor:-1,fb:null,timer:null};
+}
+
+/* ===== Специальные сессии: ошибки и повторение ===== */
+function allItems(){var out=[];LESSONS.forEach(function(L){L.s.forEach(function(S,i){out.push({l:L.idx,i:i});});});return out;}
+function errorItems(){return allItems().filter(function(it){var s=progress.sent[itemSentence(it)._key];return !!(s&&s.lf==='r');});}
+function dueItems(){
+  var now=Date.now();
+  var its=allItems().filter(function(it){var s=progress.sent[itemSentence(it)._key];return !!(s&&s.fa>0&&s.due<=now);});
+  its.sort(function(a,b){var sa=progress.sent[itemSentence(a)._key],sb=progress.sent[itemSentence(b)._key];return (sa.box-sb.box)||(sa.due-sb.due);});
+  return its.slice(0,20);
+}
+function weakestItems(n){
+  var its=allItems().filter(function(it){var s=progress.sent[itemSentence(it)._key];return !!(s&&s.fa>0);});
+  its.sort(function(a,b){var sa=progress.sent[itemSentence(a)._key],sb=progress.sent[itemSentence(b)._key];var ra=sa.fc/sa.fa,rb=sb.fc/sb.fa;return (ra-rb)||(sa.box-sb.box);});
+  return its.slice(0,n);
+}
+function buildSpecial(kind){return newSession(kind==='errors'?errorItems():dueItems(),kind,true);}
+
+/* ===== Тема ===== */
+var theme='auto';
+function applyTheme(t){
+  var root=document.documentElement;
+  if(t==='light'||t==='dark')root.setAttribute('data-theme',t);else root.removeAttribute('data-theme');
+  var b=$('#btnTheme');if(b){b.textContent=t==='light'?'☀':t==='dark'?'☾':'◐';b.title='Тема: '+(t==='light'?'светлая':t==='dark'?'тёмная':'как в системе');}
+}
+function getTheme(){try{theme=localStorage.getItem('pl16theme')||'auto';}catch(e){theme='auto';}return theme;}
+function cycleTheme(){
+  theme=theme==='auto'?'light':theme==='light'?'dark':'auto';
+  try{localStorage.setItem('pl16theme',theme);}catch(e){}
+  applyTheme(theme);
+}
+
+/* ===== Озвучка ===== */
+var voices=[],warnedVoice=false,currentUtter=null;
+function loadVoices(){try{voices=window.speechSynthesis.getVoices()||[];}catch(e){voices=[];}}
+if('speechSynthesis' in window){loadVoices();try{window.speechSynthesis.onvoiceschanged=loadVoices;}catch(e){}}
+function pickVoice(){
+  if(!voices.length)loadVoices();
+  for(var i=0;i<voices.length;i++){if(/^pl/i.test(voices[i].lang||'')&&voices[i].localService)return voices[i];}
+  for(var j=0;j<voices.length;j++){if(/^pl/i.test(voices[j].lang||''))return voices[j];}
+  return null;
+}
+function speak(text){
+  if(!('speechSynthesis' in window)||typeof SpeechSynthesisUtterance==='undefined'){toast('В этом браузере нет синтеза речи — пользуйтесь транскрипцией.');return;}
+  var synth=window.speechSynthesis;
+  try{
+    var u=new SpeechSynthesisUtterance(text);
+    currentUtter=u;
+    u.lang='pl-PL';u.rate=0.9;u.pitch=1;u.volume=1;
+    var v=pickVoice();
+    if(v)u.voice=v;
+    else if(!warnedVoice){warnedVoice=true;toast('Польский голос не найден — озвучка будет приблизительной. Добавьте польский язык в настройках устройства; транскрипция точнее.');}
+    u.onerror=function(e){var r=(e&&e.error)||'';if(r==='interrupted'||r==='canceled')return;toast('Озвучка не сработала ('+(r||'ошибка')+'). Если это встроенный просмотр, откройте файл напрямую; транскрипция ниже.');};
+    var go=function(){try{synth.resume();synth.speak(u);}catch(err){toast('Не удалось озвучить');}};
+    if(synth.speaking||synth.pending){synth.cancel();setTimeout(go,150);}else go();
+  }catch(e){toast('Не удалось озвучить');}
+}
+var toastTimer=null;
+function toast(msg){
+  var t=$('#toast');if(!t)return;
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},3200);
+}
+
+/* ===== Каркас ===== */
+function chipLabel(l){return l.kind==='situation'?(l.n+' '+esc(l.short||l.title)):String(l.n);}
+function renderShell(){
+  var bar=$('#lessonBar');
+  var errN=errorItems().length,dueN=dueItems().length;
+  var h=LESSONS.map(function(l,i){return '<button type="button" data-l="'+i+'" class="'+(state.view==='lesson'&&i===state.lesson?'active':'')+(l.kind==='situation'?' sit':'')+'" aria-label="'+esc(l.title)+'">'+chipLabel(l)+'</button>';}).join('');
+  h+='<span class="sep"></span>';
+  h+='<button type="button" data-view="errors" class="spec'+(state.view==='errors'?' active':'')+'">Ошибки'+(errN?' <b>'+errN+'</b>':'')+'</button>';
+  h+='<button type="button" data-view="review" class="spec'+(state.view==='review'?' active':'')+'">Повтор'+(dueN?' <b>'+dueN+'</b>':'')+'</button>';
+  bar.innerHTML=h;
+  var lt=$('#lessonTitle'),tabs=$('.tabs');
+  if(state.view==='lesson'){
+    var l=L();
+    lt.innerHTML='<b>'+(l.kind==='situation'?esc(l.title):'Урок '+l.n+'. '+esc(l.title))+'</b><span>'+esc(l.sub)+'</span>';
+    tabs.hidden=false;
+    $$('.tabs button').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-mode')===state.mode);});
+  }else if(state.view==='errors'){
+    lt.innerHTML='<b>Работа над ошибками</b><span>Фразы, которые в последний раз не получились с первой попытки. Верный ответ с первой попытки убирает фразу из списка.</span>';tabs.hidden=true;
+  }else if(state.view==='review'){
+    lt.innerHTML='<b>Повторение по интервалам</b><span>Фразы, срок повторения которых подошёл: верно — интервал растёт (1, 3, 7, 14, 30 дней), ошибка — фраза возвращается в начало.</span>';tabs.hidden=true;
+  }else{
+    lt.innerHTML='<b>Итог</b><span>Оценки, слабые темы, настройки.</span>';tabs.hidden=true;
+  }
+  var active=bar.querySelector('.active');
+  if(active&&active.scrollIntoView){try{active.scrollIntoView({block:'nearest',inline:'center'});}catch(e){}}
+  renderPanel();
+}
+function renderPanel(){
+  if(state.view==='summary'){renderSummary();return;}
+  if(state.view==='errors'||state.view==='review'){renderPhrases();return;}
+  if(state.mode==='phrases')renderPhrases();
+  else if(state.mode==='words')renderWords();
+  else renderRule();
+}
+function stopWordTimer(){var ws=state.ws[L().id];if(ws&&ws.timer){clearTimeout(ws.timer);ws.timer=null;}}
+function setLesson(i){
+  if(i<0||i>=LESSONS.length)return;
+  stopWordTimer();
+  state.lesson=i;state.view='lesson';
+  renderShell();
+  window.scrollTo(0,0);
+}
+function setView(v){
+  stopWordTimer();
+  state.view=v;
+  if(v==='errors'||v==='review'){var sp=state.special[v];if(!sp||!sp.queue.length||sp.kind!==v)state.special[v]=buildSpecial(v);}
+  renderShell();
+  window.scrollTo(0,0);
+}
+function setMode(m){
+  stopWordTimer();
+  state.mode=m;
+  $$('.tabs button').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-mode')===m);});
+  renderPanel();
+}
+
+/* ===== Режим «Фразы» ===== */
+function scoreHTML(ps){
+  var grade=ps.attempts?(5*ps.correct/ps.attempts):null;
+  return '<div class="score"><span class="grade">'+fmtGrade(grade)+'<small>оценка</small></span>'+
+    '<span class="sc ok">верно <b>'+ps.correct+'</b></span>'+
+    '<span class="sc bad">ошибок <b>'+ps.wrong+'</b></span>'+
+    '<span class="sc">осталось <b>'+ps.queue.length+'</b></span></div>';
+}
+function barHTML(ps){
+  var cur=ps.checked?ps.checked.idx:(ps.queue.length?ps.queue[0]:-1);
+  return '<div class="bar">'+ps.first.map(function(f,i){
+    var cls=(f||'')+(ps.solved[i]?' done':'')+(i===cur?' cur':'');
+    return '<i class="'+cls.trim()+'"></i>';
+  }).join('')+'</div>';
+}
+function updateScoreBar(){var ps=PS();var s=$('#scorebox');if(s)s.innerHTML=scoreHTML(ps)+barHTML(ps);}
+function specialEmptyHTML(){
+  if(state.view==='errors')return '<div class="finish"><h3>Ошибок нет</h3><p>Все фразы, которые вы проходили, в последний раз получились с первой попытки.</p><div class="actions"><button type="button" class="secondary" id="btnGoSummary">Открыть итог</button></div></div>';
+  var weak=weakestItems(15);
+  return '<div class="finish"><h3>Пока нечего повторять</h3><p>Срок повторения ещё не подошёл ни у одной фразы. Пройдите новый раздел или повторите самые слабые фразы прямо сейчас.</p>'+
+    '<div class="actions">'+(weak.length?'<button type="button" class="primary" id="btnReviewWeak">Повторить '+weak.length+' самых слабых</button>':'')+'<button type="button" class="secondary" id="btnGoSummary">Открыть итог</button></div></div>';
+}
+function renderPhrases(){
+  var ps=PS(),panel=$('#panel');
+  var special=state.view!=='lesson';
+  if(special&&!ps.items.length){panel.innerHTML=specialEmptyHTML();bindSpecialEmpty();return;}
+  var h='<div id="scorebox">'+scoreHTML(ps)+barHTML(ps)+'</div>';
+  if(!ps.queue.length){
+    var grade=ps.attempts?(5*ps.correct/ps.attempts):null;
+    var title=special?(state.view==='errors'?'Работа над ошибками закончена':'Повторение закончено'):'Раздел пройден';
+    h+='<div class="finish"><h3>'+title+'</h3><p>Оценка <b>'+fmtGrade(grade)+'</b>. Верно <b>'+ps.correct+'</b>, ошибок <b>'+ps.wrong+'</b>, попыток <b>'+ps.attempts+'</b>.</p><div class="actions">';
+    if(special){h+='<button type="button" class="primary" id="btnSpecialAgain">Собрать заново</button><button type="button" class="secondary" id="btnGoSummary">Открыть итог</button>';}
+    else{h+='<button type="button" class="primary" id="btnRestart">Пройти ещё раз</button><button type="button" class="secondary" id="btnToWords">Слова раздела</button>'+(state.lesson<LESSONS.length-1?'<button type="button" class="secondary" id="btnNextLesson">Следующий раздел</button>':'')+'<button type="button" class="secondary" id="btnGoSummary">Открыть итог</button>';}
+    h+='</div></div>';
+    panel.innerHTML=h;
+    var b;
+    if((b=$('#btnRestart')))b.onclick=function(){state.ps[L().id]=newSession(itemsOfLesson(L()),'lesson',true);saveStore();renderShell();};
+    if((b=$('#btnToWords')))b.onclick=function(){setMode('words');};
+    if((b=$('#btnNextLesson')))b.onclick=function(){setLesson(state.lesson+1);};
+    if((b=$('#btnSpecialAgain')))b.onclick=function(){state.special[state.view]=buildSpecial(state.view);renderShell();};
+    if((b=$('#btnGoSummary')))b.onclick=function(){setView('summary');};
+    return;
+  }
+  var idx=ps.queue[0],S=itemSentence(ps.items[idx]);
+  if(ps.gridFor!==idx||!ps.grid){ps.grid=shuffle(S._tok.concat(S.d||[]));ps.gridFor=idx;ps.gridShown=false;}
+  var showGrid=settings.grid==='always'||ps.gridShown;
+  var origin=special?'<div class="origin">'+esc(originLabel(ps.items[idx]))+'</div>':'';
+  h+='<div class="prompt">'+origin+'<div class="ru">'+tagRu(S.ru)+'</div><div class="hint">Переведите на польский</div></div>';
+  h+='<div class="inputrow"><input id="ans" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" aria-label="Перевод" placeholder="…">'+
+     '<button type="button" id="btnBack" title="Удалить последнее слово" aria-label="Удалить последнее слово">⌫</button>'+
+     '<button type="button" id="btnClear" title="Очистить" aria-label="Очистить">✕</button></div>';
+  h+='<div class="dia">'+DIACHARS.map(function(c){return '<button type="button" data-c="'+c+'">'+c+'</button>';}).join('')+'</div>';
+  h+='<div class="gridwrap" id="gridwrap">'+(showGrid?gridHTML(ps.grid):'<button type="button" class="ghost" id="btnShowGrid">Показать слова-подсказки</button>')+'</div>';
+  h+='<div class="actions"><button type="button" class="primary" id="btnCheck">Проверить</button></div><div id="fb"></div>';
+  panel.innerHTML=h;
+  var inp=$('#ans');
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();if(PS().checked)next();else check();}});
+  inp.addEventListener('input',refreshGrid);
+  $('#btnCheck').onclick=check;
+  $('#btnBack').onclick=function(){if(PS().checked)return;var v=inp.value.replace(/\s+$/,'');var p=v.lastIndexOf(' ');inp.value=p<0?'':v.slice(0,p+1);refreshGrid();};
+  $('#btnClear').onclick=function(){if(PS().checked)return;inp.value='';refreshGrid();};
+  $$('.dia button').forEach(function(b){
+    b.addEventListener('mousedown',function(e){e.preventDefault();});
+    b.onclick=function(){if(PS().checked)return;insertChar(inp,b.getAttribute('data-c'));refreshGrid();};
+  });
+  bindGrid();
+  var sg=$('#btnShowGrid');
+  if(sg)sg.onclick=function(){var p=PS();if(p.checked)return;p.gridShown=true;$('#gridwrap').innerHTML=gridHTML(p.grid);bindGrid();refreshGrid();};
+  if(ps.checked){restoreFeedback();}
+}
+function originLabel(it){var l=LESSONS[it.l];return l.kind==='situation'?l.title:'Урок '+l.n+' · '+l.title;}
+function gridHTML(grid){return '<div class="grid" id="grid">'+grid.map(function(w){return '<button type="button" data-w="'+esc(w)+'">'+esc(w)+'</button>';}).join('')+'</div>';}
+function bindGrid(){
+  var inp=$('#ans');
+  $$('#grid button').forEach(function(b){
+    b.addEventListener('mousedown',function(e){e.preventDefault();});
+    b.onclick=function(){if(PS().checked)return;appendWord(inp,b.getAttribute('data-w'));refreshGrid();};
+  });
+}
+function bindSpecialEmpty(){
+  var b;
+  if((b=$('#btnGoSummary')))b.onclick=function(){setView('summary');};
+  if((b=$('#btnReviewWeak')))b.onclick=function(){state.special.review=newSession(weakestItems(15),'review',true);renderShell();};
+}
+function insertChar(inp,c){
+  if(document.activeElement===inp&&typeof inp.selectionStart==='number'){
+    var s=inp.selectionStart,e=inp.selectionEnd,v=inp.value;
+    inp.value=v.slice(0,s)+c+v.slice(e);
+    inp.selectionStart=inp.selectionEnd=s+1;
+  }else{inp.value+=c;}
+}
+function appendWord(inp,w){
+  var v=inp.value;
+  if(v&&!/\s$/.test(v))v+=' ';
+  inp.value=v+w+' ';
+  if(document.activeElement===inp){inp.selectionStart=inp.selectionEnd=inp.value.length;}
+}
+function refreshGrid(){
+  var inp=$('#ans');if(!inp)return;
+  var cnt={};norm(inp.value).split(' ').forEach(function(t){if(t)cnt[t]=(cnt[t]||0)+1;});
+  var seen={};
+  $$('#grid button').forEach(function(b){var t=norm(b.getAttribute('data-w'));seen[t]=(seen[t]||0)+1;b.classList.toggle('used',(cnt[t]||0)>=seen[t]);});
+}
+
+/* ===== Пословный разбор ошибки ===== */
+function tokSim(a,b){
+  if(a===b)return 0;
+  if(strip(a)===strip(b))return 0.3;
+  var k=0;while(k<a.length&&k<b.length&&a[k]===b[k])k++;
+  if(k>=3||(k>=2&&Math.min(a.length,b.length)<=3))return 0.6;
+  return 1;
+}
+function diffTokens(u,r){
+  var n=u.length,m=r.length,D=[],B=[];
+  for(var i=0;i<=n;i++){D[i]=[];B[i]=[];for(var j=0;j<=m;j++){D[i][j]=0;B[i][j]=null;}}
+  for(var a=1;a<=n;a++){D[a][0]=a;B[a][0]='del';}
+  for(var b=1;b<=m;b++){D[0][b]=b;B[0][b]='ins';}
+  for(var x=1;x<=n;x++)for(var y=1;y<=m;y++){
+    var sub=D[x-1][y-1]+tokSim(u[x-1],r[y-1]),del=D[x-1][y]+1,ins=D[x][y-1]+1;
+    if(sub<=del&&sub<=ins){D[x][y]=sub;B[x][y]='sub';}else if(del<=ins){D[x][y]=del;B[x][y]='del';}else{D[x][y]=ins;B[x][y]='ins';}
+  }
+  var ops=[],p=n,q=m;
+  while(p>0||q>0){
+    var op=B[p][q];
+    if(op==='sub'){ops.unshift({op:u[p-1]===r[q-1]?'eq':'sub',u:u[p-1],r:r[q-1]});p--;q--;}
+    else if(op==='del'){ops.unshift({op:'del',u:u[p-1]});p--;}
+    else{ops.unshift({op:'ins',r:r[q-1]});q--;}
+  }
+  return {cost:D[n][m],ops:ops};
+}
+function bestDiff(userN,S){
+  var u=userN.split(' ').filter(Boolean),best=null;
+  S._accList.forEach(function(v){var d=diffTokens(u,v.split(' '));if(!best||d.cost<best.cost)best={cost:d.cost,ops:d.ops,v:v};});
+  return best;
+}
+function diffHTML(d){
+  var parts=[],subs=[],miss=[],extra=[];
+  d.ops.forEach(function(o){
+    if(o.op==='eq')parts.push(esc(o.u));
+    else if(o.op==='sub'){parts.push('<s>'+esc(o.u)+'</s> <b>'+esc(o.r)+'</b>');subs.push(o);}
+    else if(o.op==='del'){parts.push('<s>'+esc(o.u)+'</s>');extra.push(o.u);}
+    else{parts.push('<b>+'+esc(o.r)+'</b>');miss.push(o.r);}
+  });
+  var hint='';
+  var uSorted=d.ops.filter(function(o){return o.op!=='ins';}).map(function(o){return o.u;}).sort().join(' ');
+  var rSorted=d.v.split(' ').sort().join(' ');
+  if(!subs.length&&!miss.length&&!extra.length)hint='';
+  else if(uSorted===rSorted)hint='Все слова верные, но такой порядок не принимается.';
+  else if(subs.length===1&&!miss.length&&!extra.length)hint='Ошибка в одном слове: '+subs[0].u+' → '+subs[0].r+(strip(subs[0].u)===strip(subs[0].r)?' (только знак)':'')+'.';
+  else if(!subs.length&&miss.length&&!extra.length)hint='Пропущено: '+miss.join(', ')+'.';
+  else if(!subs.length&&!miss.length&&extra.length)hint='Лишнее: '+extra.join(', ')+'.';
+  else{var bits=[];if(subs.length)bits.push('неверно: '+subs.map(function(o){return o.u+' → '+o.r;}).join(', '));if(miss.length)bits.push('пропущено: '+miss.join(', '));if(extra.length)bits.push('лишнее: '+extra.join(', '));hint=bits.join('; ')+'.';}
+  return '<div class="diff"><div class="difflabel">Разбор ответа</div><span class="pl">'+parts.join(' ')+'</span>'+(hint?'<div class="diffhint">'+esc(hint)+'</div>':'')+'</div>';
+}
+
+/* ===== Проверка ===== */
+function recordResult(S,st,firstInSession){
+  var s=sentStat(S._key),ok=st!=='r';
+  s.a++;if(ok)s.c++;else s.w++;
+  if(firstInSession){
+    s.fa++;if(ok)s.fc++;
+    s.lf=st;
+    if(ok){s.box=Math.min((s.box||0)+1,5);s.due=Date.now()+INTERVALS[s.box]*DAY;}
+    else{s.box=0;s.due=Date.now();}
+  }else if(!ok){s.box=0;s.due=Date.now();}
+}
+function check(){
+  var ps=PS();
+  if(ps.checked||!ps.queue.length)return;
+  var inp=$('#ans'),n=norm(inp.value);
+  if(!n){inp.focus();return;}
+  var idx=ps.queue[0],S=itemSentence(ps.items[idx]),st,matched=null;
+  if(S._acc[n])st='g';
+  else{var k=strip(n);if(S._str[k]){st='y';matched=S._str[k];}else st='r';}
+  ps.attempts++;
+  var firstInSession=ps.first[idx]===null;
+  if(st==='r'){ps.wrong++;ps.queue.push(ps.queue.shift());}
+  else{ps.correct++;ps.solved[idx]=true;ps.queue.shift();}
+  if(firstInSession)ps.first[idx]=st;
+  ps.checked={st:st,idx:idx,matched:matched,user:n};
+  ps.gridFor=-1;
+  recordResult(S,st,firstInSession);
+  if(!ps.queue.length&&ps.kind==='lesson'){
+    var lp=progress.lessons[L().id]||(progress.lessons[L().id]={passes:0,last:null,best:null,date:0});
+    var g=5*ps.correct/ps.attempts;
+    lp.passes++;lp.last=g;lp.best=(lp.best==null)?g:Math.max(lp.best,g);lp.date=Date.now();
+  }
+  saveStore();
+  updateScoreBar();
+  showFeedback(S,ps.checked);
+}
+function highlightDia(target,user){
+  var out='';
+  for(var i=0;i<target.length;i++){var c=target[i];out+=(c!==user[i])?'<mark>'+esc(c)+'</mark>':esc(c);}
+  return out;
+}
+function showFeedback(S,c){
+  var inp=$('#ans');inp.readOnly=true;
+  $('#btnCheck').hidden=true;
+  $$('#grid button,.dia button,#btnShowGrid').forEach(function(b){b.disabled=true;});
+  var head=c.st==='g'?'Верно':c.st==='y'?'Почти: не хватает диакритики':'Ошибка';
+  var refHtml,ref2='',diff='';
+  if(c.st==='y'){refHtml=highlightDia(c.matched,c.user);if(c.matched!==norm(S.pl))ref2='<div class="ref2">Эталон: <span>'+esc(S.pl)+'</span></div>';}
+  else{refHtml=esc(S.pl);if(c.st==='r'){var d=bestDiff(c.user,S);diff=diffHTML(d);if(d.v!==norm(S.pl))ref2='<div class="ref2">Ближайший принимаемый вариант: <span>'+esc(d.v)+'</span></div>';}}
+  var h='<div class="fb '+c.st+'"><div class="fbhead">'+head+'</div>'+
+    '<div class="ref"><span>'+refHtml+'</span><button type="button" class="spk" data-say="'+esc(S.pl)+'" title="Озвучить" aria-label="Озвучить">🔊</button></div>'+
+    (settings.tr?'<div class="tr">['+esc(TR.phrase(S.pl))+']</div>':'')+diff+ref2+
+    (c.st==='y'?'<div class="ynote">Знак меняет форму слова (pracuję — я, pracuje — он), поэтому засчитано, но помечено жёлтым.</div>':'')+
+    '<div class="note">'+esc(S.note)+'</div>'+
+    '<button type="button" class="primary" id="btnNext">Дальше</button></div>';
+  $('#fb').innerHTML=h;
+  $('#btnNext').onclick=next;
+  if(document.activeElement!==inp){try{$('#btnNext').focus();}catch(e){}}
+  var fb=$('#fb');if(fb.scrollIntoView){try{fb.scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){}}
+}
+function restoreFeedback(){var ps=PS(),S=itemSentence(ps.items[ps.checked.idx]),inp=$('#ans');inp.value=ps.checked.user;showFeedback(S,ps.checked);}
+function next(){
+  var ps=PS();
+  if(!ps.checked)return;
+  ps.checked=null;
+  if(!ps.queue.length)renderShell();else renderPhrases();
+  var inp=$('#ans');
+  if(inp&&window.matchMedia&&window.matchMedia('(pointer:fine)').matches){try{inp.focus();}catch(e){}}
+}
+
+/* ===== Режим «Слова» ===== */
+function makeOpts(ws,cur){
+  var words=L().words,others=[],seen={};
+  seen[words[cur][1]]=true;
+  words.forEach(function(w,i){if(i!==cur&&!seen[w[1]]){seen[w[1]]=true;others.push(i);}});
+  shuffle(others);
+  ws.opts=shuffle([cur].concat(others.slice(0,5)));ws.optsFor=cur;
+}
+function renderWords(){
+  var l=L(),ws=WS(),panel=$('#panel');
+  var total=l.words.length,solved=ws.solved.filter(Boolean).length;
+  if(!ws.queue.length&&!ws.fb){
+    panel.innerHTML='<div class="finish"><h3>Все слова раздела собраны</h3><p>Слов <b>'+total+'</b>, попыток <b>'+ws.attempts+'</b>, ошибок <b>'+ws.wrong+'</b>.</p>'+
+      '<div class="actions"><button type="button" class="primary" id="btnWRestart">Ещё раз</button><button type="button" class="secondary" id="btnToPhrases">Фразы раздела</button></div></div>';
+    $('#btnWRestart').onclick=function(){state.ws[l.id]=newWS();saveStore();renderWords();};
+    $('#btnToPhrases').onclick=function(){setMode('phrases');};
+    return;
+  }
+  var cur=ws.fb?ws.fb.cur:ws.queue[0],w=l.words[cur];
+  if(!ws.fb&&(ws.optsFor!==cur||!ws.opts))makeOpts(ws,cur);
+  var h='<div class="wcard"><div class="wru">'+tagRu(w[0])+'</div></div>';
+  h+='<div class="opts">'+ws.opts.map(function(oi,k){
+    var cls='';
+    if(ws.fb){if(oi===cur)cls='ok';else if(k===ws.fb.picked)cls='bad';}
+    return '<button type="button" data-k="'+k+'" class="'+cls+'"'+(ws.fb?' disabled':'')+'><span class="k">'+(k+1)+'</span>'+esc(l.words[oi][1])+'</button>';
+  }).join('')+'</div>';
+  if(ws.fb){
+    h+='<div class="wfb '+(ws.fb.ok?'ok':'bad')+'"><span>'+(ws.fb.ok?'Верно':'Неверно — слово вернётся позже')+'</span><button type="button" class="spk" data-say="'+esc(w[1].replace(/\s*\(.*?\)\s*/g,' ').replace(/\s*\/\s*/g,', ').trim()||w[1])+'" title="Озвучить" aria-label="Озвучить">🔊</button></div>';
+    if(settings.tr)h+='<div class="tr wtr">['+esc(TR.entry(w[1]))+']</div>';
+    if(!ws.fb.ok)h+='<div class="actions"><button type="button" class="primary" id="btnWNext">Дальше</button></div>';
+  }
+  h+='<div class="wprog"><span>Выучено '+solved+' из '+total+'</span><span>Ошибок '+ws.wrong+'</span></div>';
+  panel.innerHTML=h;
+  $$('.opts button').forEach(function(b){b.onclick=function(){pick(parseInt(b.getAttribute('data-k'),10));};});
+  var bn=$('#btnWNext');if(bn){bn.onclick=wordsNext;try{bn.focus();}catch(e){}}
+}
+function pick(k){
+  var ws=WS();
+  if(ws.fb||!ws.queue.length)return;
+  var cur=ws.queue[0],ok=ws.opts[k]===cur;
+  ws.attempts++;
+  if(ok){ws.solved[cur]=true;ws.queue.shift();}
+  else{ws.wrong++;ws.queue.push(ws.queue.shift());}
+  ws.fb={picked:k,ok:ok,cur:cur};
+  if(!ws.queue.length){var wp=progress.words[L().id]||(progress.words[L().id]={passes:0});wp.passes++;}
+  saveStore();
+  renderWords();
+  if(ok){ws.timer=setTimeout(function(){ws.timer=null;if(state.view==='lesson'&&state.mode==='words'&&WS()===ws&&ws.fb)wordsNext();},700);}
+}
+function wordsNext(){
+  var ws=WS();
+  if(!ws.fb)return;
+  if(ws.timer){clearTimeout(ws.timer);ws.timer=null;}
+  ws.fb=null;ws.optsFor=-1;
+  renderWords();
+}
+
+/* ===== Режим «Правило» ===== */
+function wrapTables(root){$$('table',root).forEach(function(t){if(t.parentNode.className==='tablewrap')return;var w=document.createElement('div');w.className='tablewrap';t.parentNode.insertBefore(w,t);w.appendChild(t);});}
+function renderRule(){
+  var l=L();
+  $('#panel').innerHTML='<div class="rule">'+l.rule+'</div><button type="button" class="secondary" id="btnRef2">Опорные таблицы</button>';
+  $('#btnRef2').onclick=openRef;
+  wrapTables($('#panel'));
+}
+
+/* ===== Итог ===== */
+function tagStats(){
+  var acc={};
+  LESSONS.forEach(function(L){L.s.forEach(function(S){var s=progress.sent[S._key];if(!s||!s.fa)return;S._tags.forEach(function(t){var a=acc[t]||(acc[t]={fa:0,fc:0,n:0});a.fa+=s.fa;a.fc+=s.fc;a.n++;});});});
+  return Object.keys(acc).map(function(t){return {tag:t,label:TAGS[t]||t,fa:acc[t].fa,fc:acc[t].fc,n:acc[t].n,rate:acc[t].fc/acc[t].fa};});
+}
+function tagRowHTML(t){var pct=Math.round(100*t.rate);return '<div class="tagrow"><div class="tagname">'+esc(t.label)+'<span class="muted"> · '+t.fa+' попыт.</span></div><div class="tagbar"><i style="width:'+pct+'%" class="'+(pct<60?'r':pct<85?'y':'g')+'"></i></div><div class="tagpct">'+pct+'%</div></div>';}
+function renderSummary(){
+  var panel=$('#panel');
+  var passed=[],sumLast=0,fa=0,fc=0;
+  LESSONS.forEach(function(L){var lp=progress.lessons[L.id];if(lp&&lp.passes){passed.push(L);sumLast+=lp.last;}});
+  Object.keys(progress.sent).forEach(function(k){var s=progress.sent[k];fa+=s.fa;fc+=s.fc;});
+  var mean=passed.length?sumLast/passed.length:null;
+  var errN=errorItems().length,dueN=dueItems().length;
+  var h='<div class="sum">';
+  h+='<div class="sumtop"><div class="big"><span class="grade">'+fmtGrade(mean)+'</span><small>средняя оценка по пройденным разделам</small></div>'+
+     '<div class="sumfacts"><div>Пройдено разделов: <b>'+passed.length+' из '+LESSONS.length+'</b></div><div>Точность с первой попытки: <b>'+(fa?Math.round(100*fc/fa)+'%':'–')+'</b> <span class="muted">('+fc+' из '+fa+')</span></div></div></div>';
+  h+='<div class="actions row"><button type="button" class="primary" id="btnSumErrors"'+(errN?'':' disabled')+'>Работа над ошибками'+(errN?' ('+errN+')':'')+'</button><button type="button" class="primary" id="btnSumReview">Повторение'+(dueN?' ('+dueN+')':'')+'</button></div>';
+  var ts=tagStats().filter(function(t){return t.fa>=3;});
+  if(ts.length){
+    var weak=ts.slice().sort(function(a,b){return a.rate-b.rate||b.fa-a.fa;}).filter(function(t){return t.rate<0.85;}).slice(0,5);
+    var strong=ts.slice().sort(function(a,b){return b.rate-a.rate||b.fa-a.fa;}).filter(function(t){return t.rate>=0.85;}).slice(0,3);
+    if(weak.length)h+='<h3>Требуют внимания</h3><div class="tags">'+weak.map(tagRowHTML).join('')+'</div>';
+    else h+='<h3>Требуют внимания</h3><p class="muted">Пока ни одна тема не проседает ниже 85% — так держать.</p>';
+    if(strong.length)h+='<h3>Уверенно</h3><div class="tags">'+strong.map(tagRowHTML).join('')+'</div>';
+  }else h+='<p class="muted">Статистика по темам появится после нескольких проверенных фраз (считаются только первые попытки в каждом проходе).</p>';
+  h+='<h3>Разделы</h3><div class="lessonlist">'+LESSONS.map(function(L){
+    var lp=progress.lessons[L.id],cur=state.ps[L.id]||progress.ps[L.id],wp=progress.words[L.id];
+    var status;
+    if(lp&&lp.passes)status='<span class="g">'+fmtGrade(lp.last)+'</span><small>лучшая '+fmtGrade(lp.best)+' · проходов '+lp.passes+'</small>';
+    else if(cur&&cur.attempts)status='<span class="y">в процессе</span><small>осталось '+cur.queue.length+' из '+(cur.n||(cur.items&&cur.items.length)||L.s.length)+'</small>';
+    else status='<span class="muted">не начат</span>';
+    return '<button type="button" class="lrow" data-l="'+L.idx+'"><span class="lname">'+(L.kind==='situation'?L.n+' ':'')+esc(L.kind==='situation'?L.title:'Урок '+L.n+'. '+L.title)+(wp&&wp.passes?' <em>слова ✓</em>':'')+'</span><span class="lstat">'+status+'</span></button>';
+  }).join('')+'</div>';
+  h+='<h3>Настройки</h3><div class="settings">'+
+     '<label><input type="checkbox" id="setGrid"'+(settings.grid==='always'?' checked':'')+'> Всегда показывать слова-подсказки (по умолчанию скрыты: так лучше запоминаются окончания)</label>'+
+     '<label><input type="checkbox" id="setTr"'+(settings.tr?' checked':'')+'> Показывать транскрипцию</label>'+
+     '<button type="button" class="secondary danger" id="btnReset">Сбросить весь прогресс</button></div>';
+  h+='<p class="muted small">Прогресс хранится только в этом браузере (localStorage), без сервера. Очистка данных сайта его удалит.</p></div>';
+  panel.innerHTML=h;
+  $('#btnSumErrors').onclick=function(){setView('errors');};
+  $('#btnSumReview').onclick=function(){setView('review');};
+  $$('.lrow').forEach(function(b){b.onclick=function(){setLesson(parseInt(b.getAttribute('data-l'),10));};});
+  $('#setGrid').onchange=function(){settings.grid=this.checked?'always':'hidden';saveStore();};
+  $('#setTr').onchange=function(){settings.tr=this.checked;saveStore();};
+  $('#btnReset').onclick=function(){if(confirm('Удалить весь сохранённый прогресс? Это действие нельзя отменить.')){resetProgress();persist();renderShell();toast('Прогресс сброшен');}};
+}
+
+/* ===== Подсказка ===== */
+function openRef(){var o=$('#refOverlay');o.hidden=false;o.scrollTop=0;document.body.style.overflow='hidden';try{$('#btnRefClose').focus();}catch(e){}}
+function closeRef(){$('#refOverlay').hidden=true;document.body.style.overflow='';}
+
+/* ===== Инициализация ===== */
+var inited=false;
+function init(){
+  if(inited)return;inited=true;
+  loadStore();
+  applyTheme(getTheme());
+  $('#btnTheme').onclick=cycleTheme;
+  $('#btnRef').onclick=openRef;
+  $('#btnSummary').onclick=function(){setView('summary');};
+  $('#btnRefClose').onclick=closeRef;
+  var ov=$('#refOverlay');
+  ov.querySelector('.inner').insertAdjacentHTML('beforeend',REF_HTML);wrapTables(ov);
+  $('#lessonBar').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.hasAttribute('data-l'))setLesson(parseInt(b.getAttribute('data-l'),10));else if(b.hasAttribute('data-view'))setView(b.getAttribute('data-view'));});
+  $$('.tabs button').forEach(function(b){b.onclick=function(){setMode(b.getAttribute('data-mode'));};});
+  document.addEventListener('click',function(e){var b=e.target.closest('.spk');if(b){e.preventDefault();speak(b.getAttribute('data-say'));}});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&!$('#refOverlay').hidden){closeRef();return;}
+    if(!$('#refOverlay').hidden)return;
+    var tag=(e.target&&e.target.tagName)||'';
+    if(tag==='INPUT'||tag==='TEXTAREA')return;
+    var phrasesActive=state.view==='errors'||state.view==='review'||(state.view==='lesson'&&state.mode==='phrases');
+    if(phrasesActive){
+      if(e.key==='Enter'){var ps=PS();if(ps.checked){e.preventDefault();next();}else if(ps.queue.length&&$('#ans')){e.preventDefault();check();}}
+    }else if(state.view==='lesson'&&state.mode==='words'){
+      var ws=WS();
+      if(e.key==='Enter'&&ws.fb){e.preventDefault();wordsNext();}
+      else if(/^[1-6]$/.test(e.key)&&!ws.fb&&ws.opts){var k=parseInt(e.key,10)-1;if(k<ws.opts.length){e.preventDefault();pick(k);}}
+    }
+  });
+  window.addEventListener('beforeunload',persist);
+  renderShell();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+
+window.__pl16={norm:norm,strip:strip,expand:expand,state:state,LESSONS:LESSONS,setLesson:setLesson,setMode:setMode,setView:setView,check:check,next:next,pick:pick,wordsNext:wordsNext,PS:PS,WS:WS,progress:function(){return progress;},settings:settings,errorItems:errorItems,dueItems:dueItems,bestDiff:bestDiff,resetProgress:resetProgress,persist:persist};
+})();
+
+</script>
+</body>
+</html>
